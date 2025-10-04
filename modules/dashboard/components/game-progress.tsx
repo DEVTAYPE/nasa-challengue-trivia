@@ -15,12 +15,36 @@ import {
 } from "@/components/ui/popover";
 import { CheckCircle2, Lock, Play, Trophy } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Level, levels } from "./game-progress-constants";
 import { LevelSelectDetail } from "./level-select-detail";
+import { useGameStore, CROPS, CropType, Level } from "@/core";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { GameProgressIcons } from "./game-progress-icons";
 
 export const GameProgress = () => {
   const [selectedLevel, setSelectedLevel] = useState<Level | null>(null);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  // Obtener datos del store
+  const session = useGameStore((state) => state.session);
+  const selectCrop = useGameStore((state) => state.selectCrop);
+  const isLoading = useGameStore((state) => state.isLoading);
+  const getLevelsForCurrentCrop = useGameStore(
+    (state) => state.getLevelsForCurrentCrop
+  );
+
+  // Obtener niveles del cultivo actual
+  const levels = getLevelsForCurrentCrop();
+
+  // Verificar que haya sesión activa
+  useEffect(() => {
+    if (!session) {
+      toast.error("No hay sesión activa. Redirigiendo...");
+      router.push("/game-entry");
+    }
+  }, [session, router]);
 
   // Close popover when clicking outside
   useEffect(() => {
@@ -55,6 +79,22 @@ export const GameProgress = () => {
     };
   }, [selectedLevel]);
 
+  // Manejar cambio de cultivo
+  const handleCropChange = async (cropType: CropType) => {
+    try {
+      await selectCrop(cropType);
+      setIsPopoverOpen(false);
+      toast.success(`Cultivo cambiado a ${CROPS[cropType].name}`);
+    } catch (error) {
+      toast.error("Error al cambiar de cultivo");
+      console.error(error);
+    }
+  };
+
+  if (!session) {
+    return null; // O un loader
+  }
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "completed":
@@ -82,8 +122,7 @@ export const GameProgress = () => {
             Empieza tu aventura agrícola!
           </h1>
           <p className="text-muted-foreground text-lg">
-            {/* TODO: CAMBIAR POR NOMBRE DE USUARIO */}
-            Hola Jhon doe, selecciona tu próximo desafío
+            Hola {session.playerName}, selecciona tu próximo desafío
           </p>
         </div>
 
@@ -92,12 +131,14 @@ export const GameProgress = () => {
           <div className="relative">
             <Card className="bg-card/50 backdrop-blur-sm border-border/50 overflow-visible">
               <CardHeader>
-                <Popover>
+                <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                   <PopoverTrigger asChild>
-                    <Button className="w-fit">Opciones de cultivo</Button>
+                    <Button className="w-fit">
+                      Cultivo actual: {CROPS[session.selectedCrop!].name}
+                    </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-80" side="bottom" align="start">
-                    <section className="">
+                    <section className="space-y-4">
                       <section className="space-y-3">
                         <CardTitle className="flex items-center gap-1">
                           <Trophy className="w-5 h-5 text-secondary" />
@@ -126,10 +167,25 @@ export const GameProgress = () => {
                         </div>
                       </section>
                       <section className="space-y-2">
-                        <Button>Maíz</Button>{" "}
-                        {/* MARCAR EN CASO YA ESTE SELECCIONADO */}
-                        <Button>Quinoa</Button>
-                        <Button>Papa</Button>
+                        <p className="text-sm font-semibold text-muted-foreground">
+                          Cambiar cultivo:
+                        </p>
+                        {Object.values(CROPS).map((crop) => (
+                          <Button
+                            key={crop.id}
+                            onClick={() => handleCropChange(crop.id)}
+                            variant={
+                              session.selectedCrop === crop.id
+                                ? "default"
+                                : "outline"
+                            }
+                            className="w-full justify-start"
+                            disabled={isLoading}
+                          >
+                            {crop.name}
+                            {session.selectedCrop === crop.id && " ✓"}
+                          </Button>
+                        ))}
                       </section>
                     </section>
                   </PopoverContent>
@@ -192,7 +248,19 @@ export const GameProgress = () => {
 
                   {/* Level Nodes */}
                   {levels.map((level) => {
-                    const Icon = level.icon;
+                    // Mapear el icon del nivel según su id
+                    const Icon =
+                      level.id === 1
+                        ? GameProgressIcons.seedling
+                        : level.id === 2
+                        ? GameProgressIcons.bug
+                        : level.id === 3
+                        ? GameProgressIcons.fertilizer
+                        : level.id === 4
+                        ? GameProgressIcons.radar
+                        : level.id === 5
+                        ? GameProgressIcons.eco
+                        : GameProgressIcons.satellite;
                     const isSelected = selectedLevel?.id === level.id;
 
                     return (

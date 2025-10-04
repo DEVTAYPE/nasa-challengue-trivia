@@ -12,7 +12,10 @@ import {
 import { CheckCircle2, Lock, Play, X } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import { Level, TDifficulty } from "./game-progress-constants";
+import { Level, Difficulty } from "@/core";
+import { useGameStore } from "@/core";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface LevelSelectDetailProps {
   level: Level;
@@ -27,7 +30,11 @@ export const LevelSelectDetail: React.FC<LevelSelectDetailProps> = ({
   popoverRef,
   Icon,
 }) => {
-  const getDifficultyColor = (difficulty: TDifficulty) => {
+  const router = useRouter();
+  const startLevel = useGameStore((state) => state.startLevel);
+  const isLoading = useGameStore((state) => state.isLoading);
+
+  const getDifficultyColor = (difficulty: Difficulty) => {
     switch (difficulty) {
       case "easy":
         return "bg-accent text-accent-foreground";
@@ -39,6 +46,23 @@ export const LevelSelectDetail: React.FC<LevelSelectDetailProps> = ({
         return "bg-primary text-primary-foreground";
       default:
         return "bg-muted text-muted-foreground";
+    }
+  };
+
+  const handleStartLevel = async () => {
+    if (level.status === "locked") {
+      toast.error(
+        "Este nivel está bloqueado. Completa el nivel anterior primero."
+      );
+      return;
+    }
+
+    try {
+      await startLevel(level.id);
+      router.push(`/dashboard-game/${level.id}`);
+    } catch (error) {
+      toast.error("Error al iniciar el nivel");
+      console.error(error);
     }
   };
 
@@ -120,8 +144,9 @@ export const LevelSelectDetail: React.FC<LevelSelectDetailProps> = ({
 
             {/* Action Button */}
             <Button
+              onClick={handleStartLevel}
               className="w-full h-10 text-sm font-semibold shadow-lg hover:shadow-xl transition-shadow hover:cursor-pointer"
-              disabled={level.status === "locked"}
+              disabled={level.status === "locked" || isLoading}
               variant={level.status === "completed" ? "secondary" : "default"}
             >
               {level.status === "completed" && (
@@ -131,13 +156,10 @@ export const LevelSelectDetail: React.FC<LevelSelectDetailProps> = ({
                 </>
               )}
               {level.status === "available" && (
-                <Link
-                  href={`/dashboard-game/${level.id}`}
-                  className="flex items-center"
-                >
+                <>
                   <Play className="w-4 h-4 mr-2" />
                   Comenzar Aventura
-                </Link>
+                </>
               )}
               {level.status === "locked" && (
                 <>

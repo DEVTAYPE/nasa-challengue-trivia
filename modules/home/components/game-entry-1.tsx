@@ -8,26 +8,43 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CropCard } from "./crop-card";
 import { gameIntroConstants } from "./game-entry-constants";
+import { useGameStore, CropType } from "@/core";
+import { toast } from "sonner";
 
 export const GameEntry1 = () => {
   const [username, setUsername] = useState("");
   const [selectedMission, setSelectedMission] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const initializeSession = useGameStore((state) => state.initializeSession);
 
-  const initMission = () => {
-    if (!username) {
-      alert("Por favor, ingresa tu nombre explorador.");
+  const initMission = async () => {
+    if (!username.trim()) {
+      toast.error("Por favor, ingresa tu nombre explorador.");
       return;
     }
 
     if (!selectedMission) {
-      alert("Por favor, selecciona una misión.");
+      toast.error("Por favor, selecciona un cultivo.");
       return;
     }
 
-    // TODO: Lógica para iniciar la misión con el nombre y misión seleccionada
+    setIsLoading(true);
 
-    router.push("/dashboard-game");
+    try {
+      // Inicializar la sesión con Zustand
+      await initializeSession(username.trim(), selectedMission as CropType);
+
+      toast.success(`¡Bienvenido ${username}! 🌱`);
+
+      // Navegar al dashboard
+      router.push("/dashboard-game");
+    } catch (error) {
+      toast.error("Error al iniciar la sesión. Por favor, intenta de nuevo.");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -90,11 +107,13 @@ export const GameEntry1 = () => {
 
                 return (
                   <CropCard
+                    key={mission.id}
                     Icon={Icon}
                     isSelected={isSelected}
                     setSelectedMission={setSelectedMission}
                     mission={mission}
                     initMission={initMission}
+                    // isLoading={isLoading}
                   />
                 );
               })}

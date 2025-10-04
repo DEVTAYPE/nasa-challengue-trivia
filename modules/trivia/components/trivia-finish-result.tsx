@@ -2,13 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { RotateCcw, Sparkles, Trophy } from "lucide-react";
-import { IQuestion } from "./trivia-contants";
+import { ArrowLeft, RotateCcw, Sparkles, Trophy } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useGameStore, Question } from "@/core";
 
 interface TriviaFinishResultProps {
   score: number;
   correctAnswers: number;
-  questions: Array<IQuestion>;
+  questions: Array<Question>;
   handleRestart: () => void;
 }
 
@@ -18,6 +19,14 @@ export const TriviaFinishResult: React.FC<TriviaFinishResultProps> = ({
   questions,
   handleRestart,
 }) => {
+  const router = useRouter();
+  const finishLevel = useGameStore((state) => state.finishLevel);
+
+  const handleBackToDashboard = async () => {
+    // Terminar el nivel guardará el progreso
+    await finishLevel();
+    router.push("/dashboard-game");
+  };
   return (
     <div className="h-screen flex items-center justify-center p-6 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -77,18 +86,18 @@ export const TriviaFinishResult: React.FC<TriviaFinishResultProps> = ({
             <Button
               onClick={handleRestart}
               className="flex-1 h-11"
-              variant="default"
+              variant="outline"
             >
               <RotateCcw className="w-4 h-4 mr-2" />
               Reintentar
             </Button>
             <Button
-              onClick={() => {}}
+              onClick={handleBackToDashboard}
               className="flex-1 h-11"
-              variant="secondary"
+              variant="default"
             >
-              <Trophy className="w-4 h-4 mr-2" />
-              Ranking
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Volver al Mapa
             </Button>
           </div>
         </CardContent>

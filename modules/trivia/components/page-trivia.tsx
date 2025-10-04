@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { GameEntryIcons } from "@/modules/home/components";
 import { ArrowRight, CheckCircle2, XCircle } from "lucide-react";
 import { useState } from "react";
 import { triviaQuestions } from "./trivia-contants";
@@ -282,7 +283,7 @@ export const TriviaPage = () => {
                   </defs>
                 </svg>
 
-                {/* Corn character climbing */}
+                {/* icon character climbing */}
                 <div
                   className="absolute transition-all duration-1000 ease-out"
                   style={{
@@ -291,50 +292,20 @@ export const TriviaPage = () => {
                     transform: "translate(-50%, 50%)",
                   }}
                 >
-                  {/* Corn character */}
-                  <div
-                    className="relative animate-bounce"
+                  {/* TODO: SEGUN LO QUE FUE SELECCIONADO */}
+
+                  {/* <GameEntryIcons.corn
+                    className="relative animate-bounce w-16 h-16 "
                     style={{ animationDuration: "2s" }}
-                  >
-                    {/* Body (corn cob) */}
-                    <div className="w-8 h-12 bg-secondary rounded-full relative shadow-lg">
-                      <div className="absolute inset-0 bg-gradient-to-b from-secondary to-secondary/80 rounded-full" />
-                      {/* Corn kernels */}
-                      {[...Array(8)].map((_, i) => (
-                        <div
-                          key={i}
-                          className="absolute w-1.5 h-1.5 bg-secondary/60 rounded-full"
-                          style={{
-                            left: `${15 + (i % 2) * 50}%`,
-                            top: `${15 + Math.floor(i / 2) * 20}%`,
-                          }}
-                        />
-                      ))}
-                    </div>
-
-                    {/* Leaves on top */}
-                    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 flex gap-1">
-                      <div className="w-3 h-6 bg-accent rounded-full transform -rotate-45" />
-                      <div className="w-3 h-6 bg-accent rounded-full transform rotate-45" />
-                    </div>
-
-                    {/* Happy face */}
-                    <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2">
-                      <div className="flex gap-1.5 mb-1">
-                        <div className="w-1 h-1 bg-foreground/80 rounded-full" />
-                        <div className="w-1 h-1 bg-foreground/80 rounded-full" />
-                      </div>
-                      <div className="w-3 h-1.5 border-b-2 border-foreground/80 rounded-full" />
-                    </div>
-
-                    {/* Flag when completed */}
-                    {correctAnswers === triviaQuestions.length && (
-                      <div className="absolute -top-8 -right-2 animate-in zoom-in duration-500">
-                        <div className="w-1 h-8 bg-foreground/50" />
-                        <div className="absolute top-0 left-1 w-6 h-4 bg-secondary rounded-r animate-wave" />
-                      </div>
-                    )}
-                  </div>
+                  /> */}
+                  <GameEntryIcons.potato
+                    className="relative animate-bounce w-16 h-16 "
+                    style={{ animationDuration: "2s" }}
+                  />
+                  {/*                   <GameEntryIcons.quinoa
+                    className="relative animate-bounce w-16 h-16 "
+                    style={{ animationDuration: "2s" }}
+                  /> */}
                 </div>
 
                 {/* Progress markers */}

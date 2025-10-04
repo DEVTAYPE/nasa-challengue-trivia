@@ -1,3 +1,5 @@
+import { LucideProps } from "lucide-react";
+
 export interface IQuestion {
   id: number;
   question: string;

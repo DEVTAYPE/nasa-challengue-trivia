@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,7 +8,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CheckCircle2, Lock, Play, Trophy, X } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CheckCircle2, Lock, Play, Trophy } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Level, levels } from "./game-progress-constants";
 import { LevelSelectDetail } from "./level-select-detail";
@@ -76,7 +82,8 @@ export const GameProgress = () => {
             Empieza tu aventura agrícola!
           </h1>
           <p className="text-muted-foreground text-lg">
-            Hola explorador, selecciona tu próximo desafío
+            {/* TODO: CAMBIAR POR NOMBRE DE USUARIO */}
+            Hola Jhon doe, selecciona tu próximo desafío
           </p>
         </div>
 
@@ -85,15 +92,48 @@ export const GameProgress = () => {
           <div className="relative">
             <Card className="bg-card/50 backdrop-blur-sm border-border/50 overflow-visible">
               <CardHeader>
-                <CardTitle className="flex items-center gap-1">
-                  <Trophy className="w-5 h-5 text-secondary" />
-                  Mapa de Niveles
-                </CardTitle>
-                <CardDescription>
-                  Progreso:{" "}
-                  {levels.filter((l) => l.status === "completed").length}/
-                  {levels.length} niveles completados
-                </CardDescription>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button className="w-fit">Opciones de cultivo</Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80" side="bottom" align="start">
+                    <section className="">
+                      <section className="space-y-3">
+                        <CardTitle className="flex items-center gap-1">
+                          <Trophy className="w-5 h-5 text-secondary" />
+                          Mapa de Niveles
+                        </CardTitle>
+                        <CardDescription>
+                          Progreso:{" "}
+                          {
+                            levels.filter((l) => l.status === "completed")
+                              .length
+                          }
+                          /{levels.length} niveles completados
+                        </CardDescription>
+                        <div className="h-2 bg-border/20 rounded-full mt-2">
+                          <div
+                            className="h-2 bg-secondary rounded-full transition-all duration-500"
+                            style={{
+                              width: `${
+                                (levels.filter((l) => l.status === "completed")
+                                  .length /
+                                  levels.length) *
+                                100
+                              }%`,
+                            }}
+                          />
+                        </div>
+                      </section>
+                      <section className="space-y-2">
+                        <Button>Maíz</Button>{" "}
+                        {/* MARCAR EN CASO YA ESTE SELECCIONADO */}
+                        <Button>Quinoa</Button>
+                        <Button>Papa</Button>
+                      </section>
+                    </section>
+                  </PopoverContent>
+                </Popover>
               </CardHeader>
               <CardContent className="p-8">
                 <div className="relative h-[600px] w-full overflow-visible">

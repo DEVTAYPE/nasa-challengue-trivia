@@ -85,9 +85,8 @@ export const TriviaPage = () => {
   };
 
   // Verificar si terminó el nivel
-  const isFinished =
-    currentQuestionIndex >= currentQuestions.length &&
-    answers.length === currentQuestions.length;
+  // El nivel termina cuando has respondido todas las preguntas
+  const isFinished = answers.length === currentQuestions.length;
 
   if (isFinished) {
     return (

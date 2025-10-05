@@ -1,3 +1,4 @@
+import { useLanguage } from "@/lib/i18n/language-context";
 import React from "react";
 
 interface CropRecommendation {
@@ -20,11 +21,13 @@ export const CropList: React.FC<CropListProps> = ({
   onCropSelect,
   selectedCropIndex,
 }) => {
+  const { t, language } = useLanguage();
+
   if (!cropData || !cropData.top_recommendations) {
     return (
       <div className="crop-list-container">
-        <h3>🌾 Cultivos Recomendados</h3>
-        <p>Haz click en el mapa para ver recomendaciones</p>
+        <h3>🌾 {t.map.recommendedCrops}</h3>
+        <p>{t.map.clickInstruction}</p>
       </div>
     );
   }
@@ -33,7 +36,7 @@ export const CropList: React.FC<CropListProps> = ({
 
   return (
     <div className="crop-list-container">
-      <h3>🌾 Cultivos Recomendados</h3>
+      <h3>🌾 {t.map.recommendedCrops}</h3>
       <div className="crop-list">
         {top_recommendations.map((crop, index) => (
           <div

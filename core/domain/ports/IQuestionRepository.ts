@@ -1,6 +1,8 @@
 import { Question } from "../entities/Question";
 import { CropType } from "../entities/Crop";
 
+export type Language = "es" | "en";
+
 /**
  * Puerto para acceder al repositorio de preguntas
  * Define el contrato que debe cumplir cualquier implementación
@@ -11,16 +13,23 @@ export interface IQuestionRepository {
    */
   getQuestionsByCropAndLevel(
     cropType: CropType,
-    levelId: number
+    levelId: number,
+    language?: Language
   ): Promise<Question[]>;
 
   /**
    * Obtiene una pregunta por su ID
    */
-  getQuestionById(questionId: string): Promise<Question | null>;
+  getQuestionById(
+    questionId: string,
+    language?: Language
+  ): Promise<Question | null>;
 
   /**
    * Obtiene todas las preguntas de un cultivo
    */
-  getQuestionsByCrop(cropType: CropType): Promise<Question[]>;
+  getQuestionsByCrop(
+    cropType: CropType,
+    language?: Language
+  ): Promise<Question[]>;
 }

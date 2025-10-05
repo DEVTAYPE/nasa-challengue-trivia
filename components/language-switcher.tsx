@@ -15,7 +15,7 @@ export const LanguageSwitcher: React.FC = () => {
   return (
     <button
       onClick={toggleLanguage}
-      className="fixed bottom-6 right-6 z-50 group"
+      className="fixed bottom-6 right-6 z-[999] group"
       aria-label="Change language"
     >
       <div className="relative">
@@ -38,9 +38,6 @@ export const LanguageSwitcher: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Pulse Effect */}
-        <div className="absolute inset-0 bg-green-400 rounded-full animate-ping opacity-20" />
       </div>
     </button>
   );

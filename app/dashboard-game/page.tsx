@@ -2,18 +2,22 @@
 
 import { GameProgress } from "@/modules/dashboard/components";
 import { useGameStore, mapCropName, CROPS, CropType } from "@/core";
+import { useGameLanguage } from "@/core/application/useGameLanguage";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { toast } from "sonner";
 import { useLanguage } from "@/lib/i18n/language-context";
 
-const DashboardGame = () => {
+const DashboardGameContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isInitializing, setIsInitializing] = useState(true);
   const [cropNotFound, setCropNotFound] = useState(false);
   const [invalidCrop, setInvalidCrop] = useState<string | null>(null);
   const { language } = useLanguage();
+
+  // ✅ Sincronizar idioma con el store del juego
+  useGameLanguage();
 
   const session = useGameStore((state) => state.session);
   const loadSession = useGameStore((state) => state.loadSession);
@@ -172,6 +176,23 @@ const DashboardGame = () => {
     <main className="min-h-screen bg-background">
       <GameProgress />
     </main>
+  );
+};
+
+const DashboardGame = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      }
+    >
+      <DashboardGameContent />
+    </Suspense>
   );
 };
 

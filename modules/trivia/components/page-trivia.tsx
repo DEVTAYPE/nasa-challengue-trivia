@@ -3,7 +3,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CROPS, useGameStore, Level } from "@/core";
+import { CROPS, Level, useGameStore } from "@/core";
+import { useGameLanguage } from "@/core/application/useGameLanguage";
+import { useLanguage } from "@/lib/i18n/language-context";
 import { GameEntryIcons } from "@/modules/home/components";
 import { ArrowRight, CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
@@ -11,13 +13,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { TriviaFinishResult } from "./trivia-finish-result";
-import { useLanguage } from "@/lib/i18n/language-context";
 
 export const TriviaPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
   const { t, language } = useLanguage();
+
+  // Sincronizar idioma con el store del juego
+  useGameLanguage();
 
   // Obtener datos del store
   const session = useGameStore((state) => state.session);
@@ -92,6 +96,28 @@ export const TriviaPage = () => {
     startLevel,
     router,
   ]);
+
+  // ✅ NUEVO: Recargar preguntas cuando cambia el idioma
+  useEffect(() => {
+    const reloadQuestionsOnLanguageChange = async () => {
+      // Solo recargar si ya hay una sesión activa y preguntas cargadas
+      if (session && session.selectedCrop && currentQuestions.length > 0) {
+        const currentLevel =
+          session.cropProgress[session.selectedCrop].currentLevel;
+
+        // Recargar el nivel actual con el nuevo idioma
+        await startLevel(currentLevel);
+
+        toast.success(
+          language === "es"
+            ? "Preguntas actualizadas al nuevo idioma"
+            : "Questions updated to new language"
+        );
+      }
+    };
+
+    reloadQuestionsOnLanguageChange();
+  }, [language]); // Solo observar cambios en el idioma
 
   // Mostrar pantalla de carga mientras se inicializa
   if (isLoading) {
@@ -317,7 +343,9 @@ export const TriviaPage = () => {
                             : t.trivia.incorrectAnswer}
                         </div>
                         <p className="text-xs text-muted-foreground leading-relaxed font-mono">
-                          {currentQuestion.explanation}
+                          {currentQuestion.optionExplanations &&
+                            selectedAnswer !== null &&
+                            currentQuestion.optionExplanations[selectedAnswer]}
                         </p>
                       </div>
                     </div>

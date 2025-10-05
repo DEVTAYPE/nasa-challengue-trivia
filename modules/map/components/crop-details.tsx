@@ -1,4 +1,5 @@
 import { MapResult2 } from "@/core/domain/entities/map-result-2";
+import { useLanguage } from "@/lib/i18n/language-context";
 import React from "react";
 
 interface CropDetailsProps {
@@ -18,6 +19,8 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
   loading,
   error,
 }) => {
+  const { t, language } = useLanguage();
+
   // Loading state
   if (loading) {
     return (
@@ -25,10 +28,12 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
           <h3 className="text-xl font-bold text-green-800 mb-2">
-            🌾 Analizando Cultivos...
+            🌾 {t.map.analyzing}
           </h3>
           <p className="text-gray-600">
-            Obteniendo recomendaciones para esta ubicación
+            {language === "es"
+              ? "Obteniendo recomendaciones para esta ubicación"
+              : "Getting recommendations for this location"}
           </p>
         </div>
       </div>
@@ -41,7 +46,7 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
       <div className="p-6">
         <div className="bg-red-50 border-l-4 border-red-600 rounded-lg p-6">
           <h3 className="text-lg font-bold text-red-800 mb-2 flex items-center gap-2">
-            <span>❌</span> Error
+            <span>❌</span> {t.map.error}
           </h3>
           <p className="text-red-700 text-sm">{error}</p>
         </div>
@@ -55,11 +60,10 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
       <div className="flex items-center justify-center h-full p-8">
         <div className="text-center max-w-md">
           <div className="text-7xl mb-4">🌍</div>
-          <h3 className="text-2xl font-bold text-gray-800 mb-3">Bienvenido</h3>
-          <p className="text-gray-600">
-            Haz clic en el mapa para obtener recomendaciones de cultivos para
-            cualquier ubicación
-          </p>
+          <h3 className="text-2xl font-bold text-gray-800 mb-3">
+            {language === "es" ? "Bienvenido" : "Welcome"}
+          </h3>
+          <p className="text-gray-600">{t.map.clickInstruction}</p>
         </div>
       </div>
     );
@@ -117,9 +121,15 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
       <div className="bg-white rounded-xl shadow-lg overflow-hidden">
         <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-4 py-3 border-b-2 border-green-200">
           <h3 className="text-lg font-bold text-green-900 flex items-center gap-2">
-            Selecciona uno de {cropData.top_recommendations.length} cultivo
-            {cropData.top_recommendations.length !== 1 ? "s" : ""} que puedes
-            jugar
+            {language === "es"
+              ? `Selecciona uno de ${
+                  cropData.top_recommendations.length
+                } cultivo${
+                  cropData.top_recommendations.length !== 1 ? "s" : ""
+                } que puedes jugar`
+              : `Select one of ${cropData.top_recommendations.length} crop${
+                  cropData.top_recommendations.length !== 1 ? "s" : ""
+                } you can play`}
           </h3>
         </div>
         <div className="divide-y divide-gray-200">
@@ -151,7 +161,8 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
                       </span>
                       <span className="text-gray-400">•</span>
                       <span className="font-mono">
-                        {crop.growth_period_days} días
+                        {crop.growth_period_days}{" "}
+                        {language === "es" ? "días" : "days"}
                       </span>
                     </div>
                   </div>
@@ -173,7 +184,9 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
                     className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all active:scale-95 text-sm"
                   >
                     <span>🎮</span>
-                    Jugar con {crop.crop_name}
+                    {language === "es"
+                      ? `Jugar con ${crop.crop_name}`
+                      : `Play with ${crop.crop_name}`}
                   </a>
                 </div>
               )}
@@ -186,8 +199,10 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
       {!selectedCrop && analysis_info && (
         <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200">
           <p className="text-sm text-gray-700 text-center">
-            <span className="font-semibold text-blue-800">💡 Consejo:</span>{" "}
-            Selecciona un cultivo para ver información detallada
+            <span className="font-semibold text-blue-800">
+              💡 {language === "es" ? "Consejo" : "Tip"}:
+            </span>{" "}
+            {t.map.selectCrop}
           </p>
         </div>
       )}

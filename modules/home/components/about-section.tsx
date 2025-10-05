@@ -31,7 +31,7 @@ export const AboutSection = () => {
             <p className="text-gray-600 mb-6 leading-relaxed">
               {t.about.gameDescription}
             </p>
-            <Link href="/game-entry">
+            <Link href="/maps">
               <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold">
                 {t.common.startNow}
               </Button>

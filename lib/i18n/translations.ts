@@ -118,6 +118,33 @@ export interface Translations {
       retryLevel: string;
     };
   };
+
+  // Map
+  map: {
+    title: string;
+    subtitle: string;
+    clickInstruction: string;
+    analyzing: string;
+    error: string;
+    location: string;
+    analysisDate: string;
+    recommendedCrops: string;
+    suitability: string;
+    high: string;
+    medium: string;
+    low: string;
+    selectCrop: string;
+    cropDetails: string;
+    temperature: string;
+    precipitation: string;
+    soilMoisture: string;
+    vegetation: string;
+    waterIndex: string;
+    playTrivia: string;
+    viewDetails: string;
+    noData: string;
+    loading: string;
+  };
 }
 
 export const translations: Record<Language, Translations> = {
@@ -263,6 +290,33 @@ export const translations: Record<Language, Translations> = {
         retryLevel: "Retry Level",
       },
     },
+
+    // Map
+    map: {
+      title: "Interactive Crop Map",
+      subtitle: "Explore Peru and discover suitable crops",
+      clickInstruction: "Click on the map to analyze a location",
+      analyzing: "Analyzing location...",
+      error: "Error loading data",
+      location: "Location",
+      analysisDate: "Analysis Date",
+      recommendedCrops: "Recommended Crops",
+      suitability: "Suitability",
+      high: "High",
+      medium: "Medium",
+      low: "Low",
+      selectCrop: "Select a crop to see details",
+      cropDetails: "Crop Details",
+      temperature: "Temperature",
+      precipitation: "Precipitation",
+      soilMoisture: "Soil Moisture",
+      vegetation: "Vegetation (NDVI)",
+      waterIndex: "Water Index (NDWI)",
+      playTrivia: "Play Trivia",
+      viewDetails: "View Details",
+      noData: "No data available",
+      loading: "Loading...",
+    },
   },
 
   es: {
@@ -407,6 +461,33 @@ export const translations: Record<Language, Translations> = {
         continueToMap: "Continuar al Mapa",
         retryLevel: "Reintentar Nivel",
       },
+    },
+
+    // Map
+    map: {
+      title: "Mapa Interactivo de Cultivos",
+      subtitle: "Explora Perú y descubre cultivos adecuados",
+      clickInstruction: "Haz clic en el mapa para analizar una ubicación",
+      analyzing: "Analizando ubicación...",
+      error: "Error al cargar datos",
+      location: "Ubicación",
+      analysisDate: "Fecha de Análisis",
+      recommendedCrops: "Cultivos Recomendados",
+      suitability: "Aptitud",
+      high: "Alta",
+      medium: "Media",
+      low: "Baja",
+      selectCrop: "Selecciona un cultivo para ver detalles",
+      cropDetails: "Detalles del Cultivo",
+      temperature: "Temperatura",
+      precipitation: "Precipitación",
+      soilMoisture: "Humedad del Suelo",
+      vegetation: "Vegetación (NDVI)",
+      waterIndex: "Índice de Agua (NDWI)",
+      playTrivia: "Jugar Trivia",
+      viewDetails: "Ver Detalles",
+      noData: "No hay datos disponibles",
+      loading: "Cargando...",
     },
   },
 };

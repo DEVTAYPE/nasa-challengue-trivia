@@ -3,7 +3,10 @@ import { CropType } from "../domain/entities/Crop";
 import { Level, LevelStatus } from "../domain/entities/Level";
 import { Question, Answer } from "../domain/entities/Question";
 import { GameSession, LevelProgress } from "../domain/entities/GameSession";
-import { IQuestionRepository } from "../domain/ports/IQuestionRepository";
+import {
+  IQuestionRepository,
+  Language,
+} from "../domain/ports/IQuestionRepository";
 import { IGameSessionRepository } from "../domain/ports/IGameSessionRepository";
 import { InMemoryQuestionRepository } from "../infrastructure/repositories/InMemoryQuestionRepository";
 import { LocalStorageGameSessionRepository } from "../infrastructure/repositories/LocalStorageGameSessionRepository";
@@ -23,6 +26,9 @@ interface GameStore {
   isLoading: boolean;
   error: string | null;
 
+  // Idioma actual
+  currentLanguage: Language;
+
   // Estado de la trivia actual
   currentQuestions: Question[];
   currentQuestionIndex: number;
@@ -39,6 +45,9 @@ interface GameStore {
   loadSession: () => Promise<void>;
   selectCrop: (cropType: CropType) => Promise<void>;
   clearSession: () => Promise<void>;
+
+  // Acción de idioma
+  setLanguage: (language: Language) => void;
 
   // Acciones de nivel
   startLevel: (levelId: number) => Promise<void>;
@@ -68,6 +77,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   session: null,
   isLoading: false,
   error: null,
+  currentLanguage: "es",
   currentQuestions: [],
   currentQuestionIndex: 0,
   selectedAnswer: null,
@@ -211,10 +221,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   /**
+   * Establece el idioma del juego
+   */
+  setLanguage: (language: Language) => {
+    set({ currentLanguage: language });
+  },
+
+  /**
    * Inicia un nivel cargando sus preguntas
    */
   startLevel: async (levelId: number) => {
-    const { session, questionRepository } = get();
+    const { session, questionRepository, currentLanguage } = get();
     if (!session || !session.selectedCrop) return;
 
     set({ isLoading: true });
@@ -222,7 +239,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     try {
       const questions = await questionRepository.getQuestionsByCropAndLevel(
         session.selectedCrop,
-        levelId
+        levelId,
+        currentLanguage
       );
 
       set({

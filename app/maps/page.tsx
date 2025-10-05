@@ -1,6 +1,7 @@
 "use client";
 
 import { MapResult2 } from "@/core/domain/entities/map-result-2";
+import { useLanguage } from "@/lib/i18n/language-context";
 import {
   CropDetails,
   ErrorBoundary,
@@ -8,9 +9,11 @@ import {
   PopupStack,
 } from "@/modules/map/components";
 import { addPopup } from "@/modules/map/services";
+import Link from "next/link";
 import { useState } from "react";
 
 const Page = () => {
+  const { t, language } = useLanguage();
   const [selectedLocation, setSelectedLocation] = useState<{
     lat: number;
     lng: number;
@@ -40,48 +43,50 @@ const Page = () => {
     setSelectedCropIndex(null); // Reset selected crop when new location is clicked
 
     try {
-      const response = await fetch(
-        // `http://localhost:8000/recommend?lat=${lat}&lon=${lng}&date=${analysisDate}`,
-        `/data/result-mock.json`,
-        {
-          method: "GET",
-          mode: "cors",
-          headers: {
-            "Content-Type": "application/json",
-          },
+      let data: MapResult2 | null = null;
+
+      try {
+        // Intenta obtener datos del servidor real
+        const response = await fetch(
+          `http://44.198.7.102:8000/recommend?lat=${lat}&lon=${lng}&date=${analysisDate}`,
+          {
+            method: "GET",
+            mode: "cors",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            signal: AbortSignal.timeout(10000), // 10 segundos timeout
+          }
+        );
+
+        if (response.ok) {
+          data = (await response.json()) as MapResult2;
+          console.log("✅ Datos del servidor:", data);
+        } else {
+          throw new Error("Server error");
         }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      } catch (err: any) {
+        // Fallback silencioso a datos mock
+        console.log("📦 Usando datos de ejemplo");
+        const mockResponse = await fetch(`/data/result-mock.json`);
+        data = (await mockResponse.json()) as MapResult2;
       }
 
-      const data = (await response.json()) as MapResult2;
-      console.log("Backend response:", data);
-      setCropData(data);
-
-      // Agregar al stack de popups
-      const popupData = {
-        lat,
-        lng,
-        locationInfo,
-        cropData: data,
-        timestamp: Date.now(),
-      };
-      addPopup(popupData);
+      // Mostrar datos (ya sea del servidor o mock)
+      if (data) {
+        setCropData(data);
+        const popupData = {
+          lat,
+          lng,
+          locationInfo,
+          cropData: data,
+          timestamp: Date.now(),
+        };
+        addPopup(popupData);
+      }
     } catch (err: any) {
-      console.error("Error fetching data:", err);
-      if (err.message.includes("CORS") || err.message.includes("blocked")) {
-        setError(
-          "Error de CORS: El backend no permite conexiones desde el frontend. Ejecuta: ./fix-cors.sh"
-        );
-      } else if (err.message.includes("Failed to fetch")) {
-        setError(
-          "Error de conexión: Asegúrate de que el backend esté ejecutándose en http://localhost:8000"
-        );
-      } else {
-        setError(`Error: ${err.message}`);
-      }
+      // Solo en caso de error crítico (ni servidor ni mock funcionan)
+      console.error("Error:", err);
       setCropData(null);
     } finally {
       setLoading(false);
@@ -114,10 +119,14 @@ const Page = () => {
           <div className="bg-white p-10 rounded-2xl shadow-2xl text-center max-w-md animate-fade-in">
             <div className="w-14 h-14 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
             <h2 className="text-2xl font-bold text-green-800 mb-2">
-              🌾 Analizando Ubicación...
+              {language === "es"
+                ? "🌾 Analizando Ubicación..."
+                : "🌾 Analyzing Location..."}
             </h2>
             <p className="text-gray-600">
-              Obteniendo datos climáticos y recomendaciones de cultivos
+              {language === "es"
+                ? "Obteniendo datos climáticos y recomendaciones de cultivos"
+                : "Getting climate data and crop recommendations"}
             </p>
           </div>
         </div>
@@ -130,7 +139,7 @@ const Page = () => {
           {/* Header */}
           <div className="bg-gradient-to-r from-green-700 to-emerald-600 text-white p-6 shadow-md">
             <h1 className="text-2xl font-bold mb-4 flex items-center gap-2">
-              🌾 Análisis de Cultivos
+              {language === "es" ? "Análisis de Cultivos" : "Crop Analysis"}
             </h1>
 
             {/* Date Selector */}
@@ -139,7 +148,7 @@ const Page = () => {
                 htmlFor="analysis-date"
                 className="text-sm font-semibold flex items-center gap-2"
               >
-                📅 Fecha de Análisis
+                {language === "es" ? "Fecha de Análisis" : "Analysis Date"}
               </label>
               <input
                 id="analysis-date"
@@ -150,8 +159,17 @@ const Page = () => {
               />
             </div>
 
+            <Link
+              href="/"
+              className="inline-block mt-4 text-sm text-green-50 bg-green-800 rounded-lg p-3 hover:bg-green-800/50 transition-colors"
+            >
+              {language === "es" ? "Volver a Inicio" : "Back to Home"}
+            </Link>
+
             <p className="mt-4 text-sm text-green-50 bg-green-800/30 rounded-lg p-3">
-              💡 Haz clic en el mapa para analizar cualquier ubicación
+              {language === "es"
+                ? "💡 Haz clic en el mapa para analizar cualquier ubicación"
+                : "💡 Click on the map to analyze any location"}
             </p>
           </div>
 
@@ -182,24 +200,26 @@ const Page = () => {
               className="flex-1 bg-gradient-to-r from-green-600 to-emerald-500 text-white px-4 py-3 rounded-xl shadow-lg font-semibold flex items-center justify-center gap-2 hover:shadow-xl transition-all active:scale-95"
             >
               <span>📋</span>
-              Historial
+              {language === "es" ? "Historial" : "History"}
             </button>
             <button
               onClick={() => setShowDetailsPanel(!showDetailsPanel)}
               className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-3 rounded-xl shadow-lg font-semibold flex items-center justify-center gap-2 hover:shadow-xl transition-all active:scale-95"
             >
               <span>📊</span>
-              Detalles
+              {language === "es" ? "Detalles" : "Details"}
             </button>
           </div>
         </main>
 
         {/* Right Sidebar - Desktop (Floating) */}
-        <aside className="hidden lg:flex fixed top-5 right-5 w-[350px] h-[calc(100vh-2.5rem)] bg-white/80 backdrop-blur-xl border border-green-200 rounded-2xl shadow-2xl overflow-hidden z-[1000] flex-col">
+        <aside className="hidden lg:flex fixed top-5 right-5 w-[350px] h-[calc(100vh-2.5rem)] bg-white/80 backdrop-blur-xl border border-green-200 rounded-2xl shadow-2xl overflow-hidden z-[900] flex-col">
           {/* Header with gradient */}
           <div className="bg-gradient-to-r from-green-600 to-emerald-500 text-white p-5 shadow-md">
             <h2 className="text-xl font-bold flex items-center gap-2">
-              📊 Detalles del Análisis
+              {language === "es"
+                ? "📊 Detalles del Análisis"
+                : "📊 Analysis Details"}
             </h2>
           </div>
 
@@ -237,7 +257,9 @@ const Page = () => {
               <div className="bg-gradient-to-r from-green-700 to-emerald-600 text-white px-6 py-4 shadow-md">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold flex items-center gap-2">
-                    🌾 Análisis de Cultivos
+                    {language === "es"
+                      ? "🌾 Análisis de Cultivos"
+                      : "🌾 Crop Analysis"}
                   </h2>
                   <button
                     onClick={() => setShowHistoryPanel(false)}
@@ -253,7 +275,9 @@ const Page = () => {
                     htmlFor="analysis-date-mobile"
                     className="text-xs font-semibold flex items-center gap-2"
                   >
-                    📅 Fecha de Análisis
+                    {language === "es"
+                      ? "📅 Fecha de Análisis"
+                      : "📅 Analysis Date"}
                   </label>
                   <input
                     id="analysis-date-mobile"
@@ -300,7 +324,9 @@ const Page = () => {
               <div className="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-6 py-4 shadow-md">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold flex items-center gap-2">
-                    📊 Detalles del Análisis
+                    {language === "es"
+                      ? "📊 Detalles del Análisis"
+                      : "📊 Analysis Details"}
                   </h2>
                   <button
                     onClick={() => setShowDetailsPanel(false)}

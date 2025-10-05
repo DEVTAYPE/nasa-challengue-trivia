@@ -1,0 +1,689 @@
+{
+  "analysis_data_summary": {
+    "ndvi": {
+      "mean": 0.5,
+      "quality": "high",
+      "range": "0.400 - 0.600"
+    },
+    "precipitation": {
+      "mean": 100,
+      "quality": "high",
+      "range": "80.0 - 120.0 mm"
+    },
+    "soil_moisture": {
+      "mean": 30,
+      "quality": "high",
+      "range": "29.950 - 30.050"
+    },
+    "temperature": {
+      "mean": 20,
+      "quality": "high",
+      "range": "18.0 - 22.0\u00b0C"
+    }
+  },
+  "analysis_info": {
+    "analysis_date": "2025-12-15",
+    "analysis_month": 12,
+    "coordinates": {
+      "lat": -12.0464,
+      "lon": -77.0428
+    },
+    "total_crops_analyzed": 25
+  },
+  "buffer_geojson": {
+    "geometry": {
+      "coordinates": [
+        [
+          [-76.99674067831651, -12.0464],
+          [-76.99762569526747, -12.037612147656931],
+          [-77.00024673541527, -12.029162007551122],
+          [-77.0045030736569, -12.021374313827947],
+          [-77.01023114130075, -12.014548343189796],
+          [-77.01721081191958, -12.008946413860246],
+          [-77.02517386068575, -12.004783804841834],
+          [-77.03381427210093, -12.00222048286472],
+          [-77.0428, -12.001354954954955],
+          [-77.05178572789907, -12.00222048286472],
+          [-77.06042613931425, -12.004783804841834],
+          [-77.06838918808042, -12.008946413860246],
+          [-77.07536885869925, -12.014548343189796],
+          [-77.0810969263431, -12.021374313827947],
+          [-77.08535326458473, -12.029162007551122],
+          [-77.08797430473253, -12.037612147656931],
+          [-77.08885932168349, -12.0464],
+          [-77.08797430473253, -12.055187852343069],
+          [-77.08535326458473, -12.063637992448879],
+          [-77.0810969263431, -12.071425686172054],
+          [-77.07536885869925, -12.078251656810204],
+          [-77.06838918808042, -12.083853586139755],
+          [-77.06042613931425, -12.088016195158167],
+          [-77.05178572789907, -12.09057951713528],
+          [-77.0428, -12.091445045045045],
+          [-77.03381427210093, -12.09057951713528],
+          [-77.02517386068575, -12.088016195158167],
+          [-77.01721081191958, -12.083853586139755],
+          [-77.01023114130075, -12.078251656810204],
+          [-77.0045030736569, -12.071425686172054],
+          [-77.00024673541527, -12.063637992448879],
+          [-76.99762569526747, -12.055187852343069],
+          [-76.99674067831651, -12.0464]
+        ]
+      ],
+      "type": "Polygon"
+    },
+    "properties": {
+      "center": {
+        "lat": -12.0464,
+        "lon": -77.0428
+      },
+      "description": "5km buffer around analysis point",
+      "name": "Analysis Buffer",
+      "radius_km": 5
+    },
+    "type": "Feature"
+  },
+  "detailed_recommendations": [
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 12-20\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 70-130mm)",
+        "Multiplicador regional: 0.80",
+        "Temperatura ideal para cebolla.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: high."
+      ],
+      "base_score": 120,
+      "confidence_level": "high",
+      "crop_name": "cebolla",
+      "growth_period_days": 120,
+      "harvest_date": "2026-04-14",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.8,
+      "suitability_score": 96.0,
+      "yield_potential": "high"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 12-20\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 70-130mm)",
+        "Multiplicador regional: 0.80",
+        "Temperatura ideal para esparrago.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 120,
+      "confidence_level": "high",
+      "crop_name": "esparrago",
+      "growth_period_days": 365,
+      "harvest_date": "2026-12-15",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.8,
+      "suitability_score": 96.0,
+      "yield_potential": "medium"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 16-24\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 100-200mm)",
+        "Multiplicador regional: 0.80",
+        "Temperatura ideal para maiz.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: high."
+      ],
+      "base_score": 105,
+      "confidence_level": "high",
+      "crop_name": "maiz",
+      "growth_period_days": 120,
+      "harvest_date": "2026-04-14",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.8,
+      "suitability_score": 84.0,
+      "yield_potential": "high"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 22-28\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 250-400mm)",
+        "Multiplicador regional: 0.78",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n fuera del rango \u00f3ptimo.",
+        "Potencial de rendimiento: high."
+      ],
+      "base_score": 80,
+      "confidence_level": "high",
+      "crop_name": "arroz",
+      "growth_period_days": 120,
+      "harvest_date": "2026-04-14",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.78,
+      "suitability_score": 62.7,
+      "yield_potential": "high"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 8-16\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 50-90mm)",
+        "Multiplicador regional: 0.80",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n fuera del rango \u00f3ptimo.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 70,
+      "confidence_level": "high",
+      "crop_name": "ajo",
+      "growth_period_days": 120,
+      "harvest_date": "2026-04-14",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.8,
+      "suitability_score": 56.0,
+      "yield_potential": "medium"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 8-16\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 70-140mm)",
+        "Multiplicador regional: 0.48",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: high."
+      ],
+      "base_score": 100,
+      "confidence_level": "high",
+      "crop_name": "papa",
+      "growth_period_days": 120,
+      "harvest_date": "2026-04-14",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.48,
+      "suitability_score": 48.0,
+      "yield_potential": "high"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 20-26\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 180-280mm)",
+        "Multiplicador regional: 0.56",
+        "Temperatura ideal para cafe.",
+        "Precipitaci\u00f3n fuera del rango \u00f3ptimo.",
+        "Potencial de rendimiento: high."
+      ],
+      "base_score": 85,
+      "confidence_level": "high",
+      "crop_name": "cafe",
+      "growth_period_days": 180,
+      "harvest_date": "2026-06-13",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.56,
+      "suitability_score": 47.6,
+      "yield_potential": "high"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 4-10\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 60-110mm)",
+        "Multiplicador regional: 0.48",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: high."
+      ],
+      "base_score": 85,
+      "confidence_level": "high",
+      "crop_name": "trigo",
+      "growth_period_days": 120,
+      "harvest_date": "2026-04-14",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.48,
+      "suitability_score": 40.8,
+      "yield_potential": "high"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 2-8\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 60-110mm)",
+        "Multiplicador regional: 0.48",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: high."
+      ],
+      "base_score": 85,
+      "confidence_level": "high",
+      "crop_name": "cebada",
+      "growth_period_days": 120,
+      "harvest_date": "2026-04-14",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.48,
+      "suitability_score": 40.8,
+      "yield_potential": "high"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 26-32\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 200-350mm)",
+        "Multiplicador regional: 0.47",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n fuera del rango \u00f3ptimo.",
+        "Potencial de rendimiento: high."
+      ],
+      "base_score": 75,
+      "confidence_level": "high",
+      "crop_name": "yuca_mandioca",
+      "growth_period_days": 300,
+      "harvest_date": "2026-10-11",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.47,
+      "suitability_score": 35.3,
+      "yield_potential": "high"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 5-12\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 60-110mm)",
+        "Multiplicador regional: 0.29",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 100,
+      "confidence_level": "high",
+      "crop_name": "papa_andina",
+      "growth_period_days": 180,
+      "harvest_date": "2026-06-13",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.29,
+      "suitability_score": 28.8,
+      "yield_potential": "medium"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 6-14\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 60-110mm)",
+        "Multiplicador regional: 0.29",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 100,
+      "confidence_level": "high",
+      "crop_name": "ca\u00f1ihua",
+      "growth_period_days": 180,
+      "harvest_date": "2026-06-13",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.29,
+      "suitability_score": 28.8,
+      "yield_potential": "medium"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 2-8\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 70-130mm)",
+        "Multiplicador regional: 0.29",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 100,
+      "confidence_level": "high",
+      "crop_name": "olluco",
+      "growth_period_days": 180,
+      "harvest_date": "2026-06-13",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.29,
+      "suitability_score": 28.8,
+      "yield_potential": "medium"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 2-8\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 60-110mm)",
+        "Multiplicador regional: 0.29",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: low."
+      ],
+      "base_score": 100,
+      "confidence_level": "high",
+      "crop_name": "mashua",
+      "growth_period_days": 180,
+      "harvest_date": "2026-06-13",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.29,
+      "suitability_score": 28.8,
+      "yield_potential": "low"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 2-8\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 60-110mm)",
+        "Multiplicador regional: 0.29",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 100,
+      "confidence_level": "high",
+      "crop_name": "tarwi",
+      "growth_period_days": 150,
+      "harvest_date": "2026-05-14",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.29,
+      "suitability_score": 28.8,
+      "yield_potential": "medium"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 6-14\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 60-110mm)",
+        "Multiplicador regional: 0.29",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 100,
+      "confidence_level": "high",
+      "crop_name": "habas",
+      "growth_period_days": 180,
+      "harvest_date": "2026-06-13",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.29,
+      "suitability_score": 28.8,
+      "yield_potential": "medium"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 6-14\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 60-110mm)",
+        "Multiplicador regional: 0.29",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 100,
+      "confidence_level": "high",
+      "crop_name": "oca",
+      "growth_period_days": 180,
+      "harvest_date": "2026-06-13",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.29,
+      "suitability_score": 28.8,
+      "yield_potential": "medium"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 6-14\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 60-110mm)",
+        "Multiplicador regional: 0.29",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 100,
+      "confidence_level": "high",
+      "crop_name": "maca",
+      "growth_period_days": 180,
+      "harvest_date": "2026-06-13",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.29,
+      "suitability_score": 28.8,
+      "yield_potential": "medium"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 6-14\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 60-110mm)",
+        "Multiplicador regional: 0.29",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 100,
+      "confidence_level": "high",
+      "crop_name": "arracacha",
+      "growth_period_days": 180,
+      "harvest_date": "2026-06-13",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.29,
+      "suitability_score": 28.8,
+      "yield_potential": "medium"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 6-14\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 60-110mm)",
+        "Multiplicador regional: 0.29",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 100,
+      "confidence_level": "high",
+      "crop_name": "chocho",
+      "growth_period_days": 180,
+      "harvest_date": "2026-06-13",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.29,
+      "suitability_score": 28.8,
+      "yield_potential": "medium"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 6-14\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 60-110mm)",
+        "Multiplicador regional: 0.29",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 100,
+      "confidence_level": "high",
+      "crop_name": "kiwicha",
+      "growth_period_days": 180,
+      "harvest_date": "2026-06-13",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.29,
+      "suitability_score": 28.8,
+      "yield_potential": "medium"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 6-14\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 60-110mm)",
+        "Multiplicador regional: 0.29",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 100,
+      "confidence_level": "high",
+      "crop_name": "yacon",
+      "growth_period_days": 180,
+      "harvest_date": "2026-06-13",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.29,
+      "suitability_score": 28.8,
+      "yield_potential": "medium"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 28-35\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 250-450mm)",
+        "Multiplicador regional: 0.38",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n fuera del rango \u00f3ptimo.",
+        "Potencial de rendimiento: high."
+      ],
+      "base_score": 75,
+      "confidence_level": "high",
+      "crop_name": "platano_banano",
+      "growth_period_days": 365,
+      "harvest_date": "2026-12-15",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.38,
+      "suitability_score": 28.2,
+      "yield_potential": "high"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 26-30\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 250-400mm)",
+        "Multiplicador regional: 0.38",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n fuera del rango \u00f3ptimo.",
+        "Potencial de rendimiento: high."
+      ],
+      "base_score": 75,
+      "confidence_level": "high",
+      "crop_name": "cacao",
+      "growth_period_days": 180,
+      "harvest_date": "2026-06-13",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.38,
+      "suitability_score": 28.2,
+      "yield_potential": "high"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 4-12\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 50-90mm)",
+        "Multiplicador regional: 0.29",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n fuera del rango \u00f3ptimo.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 70,
+      "confidence_level": "high",
+      "crop_name": "quinua",
+      "growth_period_days": 150,
+      "harvest_date": "2026-05-14",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.29,
+      "suitability_score": 20.2,
+      "yield_potential": "medium"
+    }
+  ],
+  "top_recommendations": [
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 12-20\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 70-130mm)",
+        "Multiplicador regional: 0.80",
+        "Temperatura ideal para cebolla.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: high."
+      ],
+      "base_score": 120,
+      "confidence_level": "high",
+      "crop_name": "cebolla",
+      "growth_period_days": 120,
+      "harvest_date": "2026-04-14",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.8,
+      "suitability_score": 96.0,
+      "yield_potential": "high"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 12-20\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 70-130mm)",
+        "Multiplicador regional: 0.80",
+        "Temperatura ideal para esparrago.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 120,
+      "confidence_level": "high",
+      "crop_name": "esparrago",
+      "growth_period_days": 365,
+      "harvest_date": "2026-12-15",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.8,
+      "suitability_score": 96.0,
+      "yield_potential": "medium"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 16-24\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 100-200mm)",
+        "Multiplicador regional: 0.80",
+        "Temperatura ideal para maiz.",
+        "Precipitaci\u00f3n adecuada.",
+        "Potencial de rendimiento: high."
+      ],
+      "base_score": 105,
+      "confidence_level": "high",
+      "crop_name": "maiz",
+      "growth_period_days": 120,
+      "harvest_date": "2026-04-14",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.8,
+      "suitability_score": 84.0,
+      "yield_potential": "high"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 22-28\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 250-400mm)",
+        "Multiplicador regional: 0.78",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n fuera del rango \u00f3ptimo.",
+        "Potencial de rendimiento: high."
+      ],
+      "base_score": 80,
+      "confidence_level": "high",
+      "crop_name": "arroz",
+      "growth_period_days": 120,
+      "harvest_date": "2026-04-14",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.78,
+      "suitability_score": 62.7,
+      "yield_potential": "high"
+    },
+    {
+      "analysis_log": [
+        "Elevaci\u00f3n: 143.2m, Regi\u00f3n: Selva",
+        "Temperatura: 20\u00b0C (rango: 8-16\u00b0C)",
+        "Precipitaci\u00f3n: 100mm (rango: 50-90mm)",
+        "Multiplicador regional: 0.80",
+        "Temperatura fuera del rango \u00f3ptimo.",
+        "Precipitaci\u00f3n fuera del rango \u00f3ptimo.",
+        "Potencial de rendimiento: medium."
+      ],
+      "base_score": 70,
+      "confidence_level": "high",
+      "crop_name": "ajo",
+      "growth_period_days": 120,
+      "harvest_date": "2026-04-14",
+      "planting_date": "2025-12-15",
+      "regional_multiplier": 0.8,
+      "suitability_score": 56.0,
+      "yield_potential": "medium"
+    }
+  ]
+}

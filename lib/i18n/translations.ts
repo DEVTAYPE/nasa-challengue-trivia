@@ -62,6 +62,62 @@ export interface Translations {
     startNow: string;
     readMore: string;
   };
+
+  // Dashboard
+  dashboard: {
+    title: string;
+    selectCrop: string;
+    selectLevel: string;
+    progress: string;
+    completed: string;
+    available: string;
+    locked: string;
+    duration: string;
+    repeatLevel: string;
+    startAdventure: string;
+    levelLocked: string;
+    closeHint: string;
+    difficulties: {
+      easy: string;
+      medium: string;
+      hard: string;
+      epic: string;
+    };
+    levels: {
+      [key: number]: {
+        title: string;
+        description: string;
+      };
+    };
+  };
+
+  // Trivia
+  trivia: {
+    question: string;
+    of: string;
+    timeRemaining: string;
+    submit: string;
+    continue: string;
+    correctAnswer: string;
+    incorrectAnswer: string;
+    correctAnswerWas: string;
+    finish: {
+      completed: string;
+      notPassed: string;
+      congratulations: string;
+      needMorePractice: string;
+      tooManyWrong: string;
+      failed: string;
+      maxAllowed: string;
+      rating: string;
+      correct: string;
+      incorrect: string;
+      backToMap: string;
+      retry: string;
+      continueToMap: string;
+      retryLevel: string;
+    };
+  };
 }
 
 export const translations: Record<Language, Translations> = {
@@ -128,6 +184,85 @@ export const translations: Record<Language, Translations> = {
       startNow: "Start Now",
       readMore: "Read More",
     },
+
+    dashboard: {
+      title: "Game Dashboard",
+      selectCrop: "Select a Crop",
+      selectLevel: "Select a Level",
+      progress: "Progress",
+      completed: "Completed",
+      available: "Available",
+      locked: "Locked",
+      duration: "Duration",
+      repeatLevel: "Repeat Level",
+      startAdventure: "Start Adventure",
+      levelLocked: "Level Locked",
+      closeHint: "to close",
+      difficulties: {
+        easy: "Easy",
+        medium: "Medium",
+        hard: "Hard",
+        epic: "Epic",
+      },
+      levels: {
+        1: {
+          title: "First Steps",
+          description: "Growth cycle, basic water needs, ideal soil.",
+        },
+        2: {
+          title: "Explorer",
+          description:
+            "Identify symptoms of water stress and common pests in crops.",
+        },
+        3: {
+          title: "Master Explorer",
+          description:
+            "Manage fertilization and irrigation by stages in different crops.",
+        },
+        4: {
+          title: "Perfect Game",
+          description:
+            "Comprehensive diagnosis, decision making under pressure. NDVI + SMAP combination.",
+        },
+        5: {
+          title: "Knowledge Seeker",
+          description:
+            "Resource optimization, sustainability, performance. OpenET (evapotranspiration).",
+        },
+        6: {
+          title: "Satellite Expert",
+          description:
+            "All satellites: GPM, SMAP, MODIS, NDVI, NDWI. Total data integration.",
+        },
+      },
+    },
+
+    trivia: {
+      question: "Question",
+      of: "of",
+      timeRemaining: "Time remaining",
+      submit: "Submit Answer",
+      continue: "Continue",
+      correctAnswer: "Correct!",
+      incorrectAnswer: "Incorrect",
+      correctAnswerWas: "The correct answer was:",
+      finish: {
+        completed: "Completed!",
+        notPassed: "Not Passed!",
+        congratulations: "Congratulations! You've completed the level.",
+        needMorePractice: "You need more practice to pass this level.",
+        tooManyWrong: "Too many incorrect answers",
+        failed: "You failed",
+        maxAllowed: "questions. The maximum allowed is",
+        rating: "Your Rating",
+        correct: "Correct",
+        incorrect: "Incorrect",
+        backToMap: "Back to Map",
+        retry: "Retry",
+        continueToMap: "Continue to Map",
+        retryLevel: "Retry Level",
+      },
+    },
   },
 
   es: {
@@ -192,6 +327,86 @@ export const translations: Record<Language, Translations> = {
       learnMore: "Conocer Más",
       startNow: "Comenzar Ahora",
       readMore: "Leer Más",
+    },
+
+    dashboard: {
+      title: "Tablero del Juego",
+      selectCrop: "Selecciona un Cultivo",
+      selectLevel: "Selecciona un Nivel",
+      progress: "Progreso",
+      completed: "Completado",
+      available: "Disponible",
+      locked: "Bloqueado",
+      duration: "Duración",
+      repeatLevel: "Repetir Nivel",
+      startAdventure: "Comenzar Aventura",
+      levelLocked: "Nivel Bloqueado",
+      closeHint: "para cerrar",
+      difficulties: {
+        easy: "Fácil",
+        medium: "Medio",
+        hard: "Difícil",
+        epic: "Épico",
+      },
+      levels: {
+        1: {
+          title: "Primeros Pasos",
+          description:
+            "Ciclo de crecimiento, necesidades básicas de agua, suelo ideal.",
+        },
+        2: {
+          title: "Explorador",
+          description:
+            "Identifica síntomas de estrés hídrico y plagas comunes en cultivos.",
+        },
+        3: {
+          title: "Maestro Explorador",
+          description:
+            "Gestiona fertilización y riego por etapas en diferentes cultivos.",
+        },
+        4: {
+          title: "Juego Perfecto",
+          description:
+            "Diagnóstico integral, toma de decisiones bajo presión. Combinación NDVI + SMAP.",
+        },
+        5: {
+          title: "Buscador de Conocimiento",
+          description:
+            "Optimización de recursos, sostenibilidad, rendimiento. OpenET (evapotranspiración).",
+        },
+        6: {
+          title: "Experto en Satélites",
+          description:
+            "Todos los satélites: GPM, SMAP, MODIS, NDVI, NDWI. Integración total de datos.",
+        },
+      },
+    },
+
+    trivia: {
+      question: "Pregunta",
+      of: "de",
+      timeRemaining: "Tiempo restante",
+      submit: "Enviar Respuesta",
+      continue: "Continuar",
+      correctAnswer: "¡Correcto!",
+      incorrectAnswer: "Incorrecto",
+      correctAnswerWas: "La respuesta correcta era:",
+      finish: {
+        completed: "¡Completado!",
+        notPassed: "¡No Superado!",
+        congratulations: "¡Felicitaciones! Has completado el nivel.",
+        needMorePractice: "Necesitas más práctica para pasar este nivel.",
+        tooManyWrong: "Demasiadas respuestas incorrectas",
+        failed: "Fallaste",
+        maxAllowed: "preguntas. El máximo permitido es",
+        rating: "Tu Calificación",
+        correct: "Correctas",
+        incorrect: "Incorrectas",
+        backToMap: "Volver al Mapa",
+        retry: "Reintentar",
+        continueToMap: "Continuar al Mapa",
+        retryLevel: "Reintentar Nivel",
+      },
     },
   },
 };

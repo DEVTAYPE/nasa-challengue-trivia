@@ -1,5 +1,6 @@
 "use client";
 
+import { MapResult2 } from "@/core/domain/entities/map-result-2";
 import {
   CropDetails,
   ErrorBoundary,
@@ -14,7 +15,7 @@ const Page = () => {
     lat: number;
     lng: number;
   } | null>(null);
-  const [cropData, setCropData] = useState(null);
+  const [cropData, setCropData] = useState<MapResult2 | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);
   const [locationInfo, setLocationInfo] = useState(null);
@@ -40,7 +41,8 @@ const Page = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/recommend?lat=${lat}&lon=${lng}&date=${analysisDate}`,
+        // `http://localhost:8000/recommend?lat=${lat}&lon=${lng}&date=${analysisDate}`,
+        `/data/result-mock.json`,
         {
           method: "GET",
           mode: "cors",
@@ -54,7 +56,7 @@ const Page = () => {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as MapResult2;
       console.log("Backend response:", data);
       setCropData(data);
 
@@ -100,6 +102,10 @@ const Page = () => {
     setLoading(false);
   };
 
+  // Estados para mobile panels
+  const [showHistoryPanel, setShowHistoryPanel] = useState(false);
+  const [showDetailsPanel, setShowDetailsPanel] = useState(false);
+
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-green-50 to-emerald-100">
       {/* Global Loading Overlay */}
@@ -118,9 +124,9 @@ const Page = () => {
       )}
 
       {/* Main Layout */}
-      <div className="flex flex-1 h-screen overflow-hidden">
-        {/* Left Sidebar */}
-        <aside className="w-[400px] bg-white border-r-2 border-green-200 flex flex-col shadow-lg">
+      <div className="flex flex-1 min-h-screen overflow-hidden">
+        {/* Left Sidebar - Hidden on mobile, shown on desktop */}
+        <aside className="hidden lg:flex lg:w-[300px] bg-white border-r-2 border-green-200 flex-col shadow-lg">
           {/* Header */}
           <div className="bg-gradient-to-r from-green-700 to-emerald-600 text-white p-6 shadow-md">
             <h1 className="text-2xl font-bold mb-4 flex items-center gap-2">
@@ -168,10 +174,28 @@ const Page = () => {
             loading={loading}
             cropData={cropData}
           />
+
+          {/* Mobile: Floating Action Buttons */}
+          <div className="lg:hidden fixed bottom-4 left-4 right-4 flex gap-3 z-[999]">
+            <button
+              onClick={() => setShowHistoryPanel(!showHistoryPanel)}
+              className="flex-1 bg-gradient-to-r from-green-600 to-emerald-500 text-white px-4 py-3 rounded-xl shadow-lg font-semibold flex items-center justify-center gap-2 hover:shadow-xl transition-all active:scale-95"
+            >
+              <span>📋</span>
+              Historial
+            </button>
+            <button
+              onClick={() => setShowDetailsPanel(!showDetailsPanel)}
+              className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-3 rounded-xl shadow-lg font-semibold flex items-center justify-center gap-2 hover:shadow-xl transition-all active:scale-95"
+            >
+              <span>📊</span>
+              Detalles
+            </button>
+          </div>
         </main>
 
-        {/* Right Sidebar - Floating */}
-        <aside className="fixed top-5 right-5 w-[450px] h-[calc(100vh-2.5rem)] bg-white/80 backdrop-blur-xl border border-green-200 rounded-2xl shadow-2xl overflow-hidden z-[1000] flex flex-col">
+        {/* Right Sidebar - Desktop (Floating) */}
+        <aside className="hidden lg:flex fixed top-5 right-5 w-[350px] h-[calc(100vh-2.5rem)] bg-white/80 backdrop-blur-xl border border-green-200 rounded-2xl shadow-2xl overflow-hidden z-[1000] flex-col">
           {/* Header with gradient */}
           <div className="bg-gradient-to-r from-green-600 to-emerald-500 text-white p-5 shadow-md">
             <h2 className="text-xl font-bold flex items-center gap-2">
@@ -180,7 +204,7 @@ const Page = () => {
           </div>
 
           {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto">
             <ErrorBoundary>
               <CropDetails
                 cropData={cropData}
@@ -193,6 +217,116 @@ const Page = () => {
             </ErrorBoundary>
           </div>
         </aside>
+
+        {/* Mobile: History Panel (Bottom Sheet) */}
+        {showHistoryPanel && (
+          <div
+            className="lg:hidden fixed inset-0 bg-black/50 z-[1500] animate-fade-in"
+            onClick={() => setShowHistoryPanel(false)}
+          >
+            <div
+              className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl max-h-[70vh] flex flex-col animate-slide-up"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Handle bar */}
+              <div className="flex justify-center pt-3 pb-2">
+                <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+              </div>
+
+              {/* Header */}
+              <div className="bg-gradient-to-r from-green-700 to-emerald-600 text-white px-6 py-4 shadow-md">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold flex items-center gap-2">
+                    🌾 Análisis de Cultivos
+                  </h2>
+                  <button
+                    onClick={() => setShowHistoryPanel(false)}
+                    className="text-white/80 hover:text-white text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {/* Date Selector */}
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 space-y-2 mt-3">
+                  <label
+                    htmlFor="analysis-date-mobile"
+                    className="text-xs font-semibold flex items-center gap-2"
+                  >
+                    📅 Fecha de Análisis
+                  </label>
+                  <input
+                    id="analysis-date-mobile"
+                    type="date"
+                    value={analysisDate}
+                    onChange={(e) => setAnalysisDate(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border-2 border-green-300 bg-white text-green-800 font-medium focus:outline-none focus:ring-2 focus:ring-green-400 text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto">
+                <ErrorBoundary>
+                  <PopupStack
+                    onPopupSelect={(popup) => {
+                      handlePopupSelect(popup);
+                      setShowHistoryPanel(false);
+                    }}
+                    selectedPopupId={selectedPopupId}
+                  />
+                </ErrorBoundary>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Mobile: Details Panel (Bottom Sheet) */}
+        {showDetailsPanel && (
+          <div
+            className="lg:hidden fixed inset-0 bg-black/50 z-[1500] animate-fade-in"
+            onClick={() => setShowDetailsPanel(false)}
+          >
+            <div
+              className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col animate-slide-up"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Handle bar */}
+              <div className="flex justify-center pt-3 pb-2">
+                <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+              </div>
+
+              {/* Header */}
+              <div className="bg-gradient-to-r from-green-600 to-emerald-500 text-white px-6 py-4 shadow-md">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold flex items-center gap-2">
+                    📊 Detalles del Análisis
+                  </h2>
+                  <button
+                    onClick={() => setShowDetailsPanel(false)}
+                    className="text-white/80 hover:text-white text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto">
+                <ErrorBoundary>
+                  <CropDetails
+                    cropData={cropData}
+                    selectedCropIndex={selectedCropIndex}
+                    onCropSelect={handleCropSelect}
+                    loading={loading}
+                    error={error}
+                    locationInfo={locationInfo}
+                  />
+                </ErrorBoundary>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

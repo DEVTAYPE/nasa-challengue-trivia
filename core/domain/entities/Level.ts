@@ -19,7 +19,10 @@ export interface Level {
   status: LevelStatus;
   duration: string;
   position: { x: number; y: number };
+  maxQuestionFailed: number;
 }
+
+const MAX_QUESTION_FAILED = 2;
 
 /**
  * Niveles del juego (comunes para todos los cultivos)
@@ -33,6 +36,7 @@ export const GAME_LEVELS: Omit<Level, "status">[] = [
     difficulty: "easy",
     duration: "5 min",
     position: { x: 10, y: 20 },
+    maxQuestionFailed: MAX_QUESTION_FAILED,
   },
   {
     id: 2,
@@ -42,6 +46,7 @@ export const GAME_LEVELS: Omit<Level, "status">[] = [
     difficulty: "easy",
     duration: "7 min",
     position: { x: 30, y: 35 },
+    maxQuestionFailed: MAX_QUESTION_FAILED,
   },
   {
     id: 3,
@@ -51,6 +56,7 @@ export const GAME_LEVELS: Omit<Level, "status">[] = [
     difficulty: "medium",
     duration: "10 min",
     position: { x: 60, y: 25 },
+    maxQuestionFailed: MAX_QUESTION_FAILED,
   },
   {
     id: 4,
@@ -60,6 +66,7 @@ export const GAME_LEVELS: Omit<Level, "status">[] = [
     difficulty: "medium",
     duration: "12 min",
     position: { x: 75, y: 45 },
+    maxQuestionFailed: MAX_QUESTION_FAILED,
   },
   {
     id: 5,
@@ -69,6 +76,7 @@ export const GAME_LEVELS: Omit<Level, "status">[] = [
     difficulty: "hard",
     duration: "15 min",
     position: { x: 50, y: 65 },
+    maxQuestionFailed: MAX_QUESTION_FAILED,
   },
   {
     id: 6,
@@ -78,5 +86,6 @@ export const GAME_LEVELS: Omit<Level, "status">[] = [
     difficulty: "hard",
     duration: "18 min",
     position: { x: 25, y: 80 },
+    maxQuestionFailed: MAX_QUESTION_FAILED,
   },
 ];

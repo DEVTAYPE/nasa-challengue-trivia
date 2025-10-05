@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { CropType } from "../domain/entities/Crop";
-import { Level } from "../domain/entities/Level";
+import { Level, LevelStatus } from "../domain/entities/Level";
 import { Question, Answer } from "../domain/entities/Question";
 import { GameSession, LevelProgress } from "../domain/entities/GameSession";
 import { IQuestionRepository } from "../domain/ports/IQuestionRepository";
@@ -32,6 +32,10 @@ interface GameStore {
 
   // Acciones de sesión
   initializeSession: (playerName: string, cropType: CropType) => Promise<void>;
+  initializeOrContinueSession: (
+    cropType: CropType,
+    playerName?: string
+  ) => Promise<void>;
   loadSession: () => Promise<void>;
   selectCrop: (cropType: CropType) => Promise<void>;
   clearSession: () => Promise<void>;
@@ -97,6 +101,61 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
       await get().sessionRepository.saveSession(newSession);
       set({ session: newSession, isLoading: false });
+    } catch (error) {
+      set({
+        error: "Error al inicializar la sesión",
+        isLoading: false,
+      });
+    }
+  },
+
+  /**
+   * Inicializa o continúa una sesión existente desde el mapa
+   * Si existe sesión, la actualiza con el cultivo seleccionado
+   * Si no existe, crea una nueva con nombre por defecto
+   */
+  initializeOrContinueSession: async (
+    cropType: CropType,
+    playerName?: string
+  ) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const existingSession = await get().sessionRepository.getCurrentSession();
+
+      if (existingSession) {
+        // Ya existe sesión, solo actualizamos el cultivo
+        const updatedSession: GameSession = {
+          ...existingSession,
+          selectedCrop: cropType,
+          currentLevel: existingSession.cropProgress[cropType].currentLevel,
+        };
+
+        await get().sessionRepository.saveSession(updatedSession);
+        set({ session: updatedSession, isLoading: false });
+      } else {
+        // No existe sesión, crear nueva con nombre por defecto
+        const defaultName = playerName || "CULTIVADOR";
+        const player = PlayerEntity.create(defaultName);
+
+        const cropProgress: GameSession["cropProgress"] = {
+          corn: createInitialCropProgress("corn"),
+          potato: createInitialCropProgress("potato"),
+          quinoa: createInitialCropProgress("quinoa"),
+        };
+
+        const newSession: GameSession = {
+          playerId: player.id,
+          playerName: player.name,
+          selectedCrop: cropType,
+          currentLevel: 1,
+          cropProgress,
+          startedAt: new Date(),
+        };
+
+        await get().sessionRepository.saveSession(newSession);
+        set({ session: newSession, isLoading: false });
+      }
     } catch (error) {
       set({
         error: "Error al inicializar la sesión",
@@ -259,15 +318,37 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (!session || !session.selectedCrop) return;
 
     const correctAnswers = answers.filter((a) => a.isCorrect).length;
+    const incorrectAnswers = answers.length - correctAnswers;
     const score = correctAnswers * 20; // 20 puntos por respuesta correcta
+
+    // Obtener el nivel actual para verificar maxQuestionFailed
+    const currentLevelData = GAME_LEVELS.find(
+      (l) => l.id === session.currentLevel
+    );
+    const maxQuestionFailed = currentLevelData?.maxQuestionFailed || 2;
+
+    // Verificar si es el primer intento (status === "available")
+    const existingProgress =
+      session.cropProgress[session.selectedCrop]?.levelsProgress[
+        session.currentLevel!
+      ];
+    const isFirstAttempt =
+      !existingProgress || existingProgress.status !== "completed";
+
+    // Determinar si pasó el nivel
+    // Solo aplicar la restricción de maxQuestionFailed en el primer intento
+    let levelStatus: LevelStatus = "completed";
+    if (isFirstAttempt && incorrectAnswers > maxQuestionFailed) {
+      levelStatus = "available"; // No pasó, sigue disponible para reintentar
+    }
 
     const levelProgress: LevelProgress = {
       levelId: session.currentLevel!,
-      status: "completed",
+      status: levelStatus,
       score,
       correctAnswers,
       totalQuestions: currentQuestions.length,
-      completedAt: new Date(),
+      completedAt: levelStatus === "completed" ? new Date() : undefined,
       answers,
     };
 

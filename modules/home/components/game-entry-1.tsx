@@ -64,6 +64,16 @@ export const GameEntry1 = () => {
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-500 bg-clip-text text-transparent text-center">
               Empecemos tu aventura agrícola!
             </CardTitle>
+            <p className="text-center text-white/60 text-sm mt-2">
+              También puedes{" "}
+              <a
+                href="/maps"
+                className="text-cyan-400 hover:text-cyan-300 underline font-semibold"
+              >
+                explorar el mapa
+              </a>{" "}
+              y seleccionar un cultivo allí
+            </p>
           </motion.div>
         </CardHeader>
 

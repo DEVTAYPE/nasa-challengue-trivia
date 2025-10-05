@@ -45,7 +45,7 @@ export const HeroSection = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-              <Link href={"/game-entry"}>
+              <Link href={"/maps"}>
                 <Button
                   size="lg"
                   className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-105 font-bold"

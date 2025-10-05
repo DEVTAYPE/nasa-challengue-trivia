@@ -20,12 +20,14 @@ import { useGameStore, CROPS, CropType, Level } from "@/core";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { GameProgressIcons } from "./game-progress-icons";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 export const GameProgress = () => {
   const [selectedLevel, setSelectedLevel] = useState<Level | null>(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { t, language } = useLanguage();
 
   // Obtener datos del store
   const session = useGameStore((state) => state.session);
@@ -37,14 +39,6 @@ export const GameProgress = () => {
 
   // Obtener niveles del cultivo actual
   const levels = getLevelsForCurrentCrop();
-
-  // Verificar que haya sesión activa
-  useEffect(() => {
-    if (!session) {
-      toast.error("No hay sesión activa. Redirigiendo...");
-      router.push("/game-entry");
-    }
-  }, [session, router]);
 
   // Close popover when clicking outside
   useEffect(() => {
@@ -84,9 +78,18 @@ export const GameProgress = () => {
     try {
       await selectCrop(cropType);
       setIsPopoverOpen(false);
-      toast.success(`Cultivo cambiado a ${CROPS[cropType].name}`);
+      toast.success(
+        language === "es"
+          ? `Cultivo cambiado a ${CROPS[cropType].name}`
+          : `Crop changed to ${CROPS[cropType].name}`
+      );
+      router.push("/dashboard-game?crop=" + cropType);
     } catch (error) {
-      toast.error("Error al cambiar de cultivo");
+      toast.error(
+        language === "es"
+          ? "Error al cambiar de cultivo"
+          : "Error changing crop"
+      );
       console.error(error);
     }
   };
@@ -119,10 +122,14 @@ export const GameProgress = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-5xl md:text-6xl font-bold mb-2 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-            Empieza tu aventura agrícola!
+            {language === "es"
+              ? "Empieza tu aventura agrícola!"
+              : "Start your agricultural adventure!"}
           </h1>
-          <p className="text-muted-foreground text-lg">
-            Hola {session.playerName}, selecciona tu próximo desafío
+          <p className="text-muted-foreground text-lg font-mono">
+            {language === "es"
+              ? "Hola cultivador!, selecciona tu próximo desafío"
+              : "Hello farmer!, select your next challenge"}
           </p>
         </div>
 
@@ -134,7 +141,8 @@ export const GameProgress = () => {
                 <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                   <PopoverTrigger asChild>
                     <Button className="w-fit">
-                      Cultivo actual: {CROPS[session.selectedCrop!].name}
+                      {language === "es" ? "Cultivo actual" : "Current crop"}:{" "}
+                      {CROPS[session.selectedCrop!].name}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-80" side="bottom" align="start">
@@ -142,15 +150,18 @@ export const GameProgress = () => {
                       <section className="space-y-3">
                         <CardTitle className="flex items-center gap-1">
                           <Trophy className="w-5 h-5 text-secondary" />
-                          Mapa de Niveles
+                          {language === "es" ? "Mapa de Niveles" : "Level Map"}
                         </CardTitle>
                         <CardDescription>
-                          Progreso:{" "}
+                          {t.dashboard.progress}:{" "}
                           {
                             levels.filter((l) => l.status === "completed")
                               .length
                           }
-                          /{levels.length} niveles completados
+                          /{levels.length}{" "}
+                          {language === "es"
+                            ? "niveles completados"
+                            : "levels completed"}
                         </CardDescription>
                         <div className="h-2 bg-border/20 rounded-full mt-2">
                           <div
@@ -168,7 +179,10 @@ export const GameProgress = () => {
                       </section>
                       <section className="space-y-2">
                         <p className="text-sm font-semibold text-muted-foreground">
-                          Cambiar cultivo:
+                          {language === "es"
+                            ? "Cambiar cultivo"
+                            : "Change crop"}
+                          :
                         </p>
                         {Object.values(CROPS).map((crop) => (
                           <Button
@@ -347,6 +361,7 @@ export const GameProgress = () => {
                             level={level}
                             setSelectedLevel={setSelectedLevel}
                             popoverRef={popoverRef}
+                            cropType={session.selectedCrop!}
                           />
                         )}
                       </div>

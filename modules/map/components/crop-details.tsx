@@ -1,8 +1,8 @@
+import { MapResult2 } from "@/core/domain/entities/map-result-2";
 import React from "react";
-import { SafeRenderer } from "./safe-renderer";
 
 interface CropDetailsProps {
-  cropData: any;
+  cropData: MapResult2 | null;
   selectedCropIndex: number | null;
   onCropSelect: (index: number) => void;
   locationInfo: any;
@@ -18,37 +18,48 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
   loading,
   error,
 }) => {
+  // Loading state
   if (loading) {
     return (
-      <div className="crop-details-container">
-        <div className="loading-container">
-          <div className="loader">
-            <div className="spinner"></div>
-            <h3>🌾 Analizando Cultivos...</h3>
-            <p>Obteniendo recomendaciones para esta ubicación</p>
-          </div>
+      <div className="flex items-center justify-center h-full p-8">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <h3 className="text-xl font-bold text-green-800 mb-2">
+            🌾 Analizando Cultivos...
+          </h3>
+          <p className="text-gray-600">
+            Obteniendo recomendaciones para esta ubicación
+          </p>
         </div>
       </div>
     );
   }
 
+  // Error state
   if (error) {
     return (
-      <div className="crop-details-container">
-        <div className="error-container">
-          <h3>❌ Error</h3>
-          <p>{error}</p>
+      <div className="p-6">
+        <div className="bg-red-50 border-l-4 border-red-600 rounded-lg p-6">
+          <h3 className="text-lg font-bold text-red-800 mb-2 flex items-center gap-2">
+            <span>❌</span> Error
+          </h3>
+          <p className="text-red-700 text-sm">{error}</p>
         </div>
       </div>
     );
   }
 
+  // Empty state
   if (!cropData || !cropData.top_recommendations) {
     return (
-      <div className="crop-details-container">
-        <div className="welcome">
-          <h3>🌍 Bienvenido</h3>
-          <p>Haz click en el mapa para obtener recomendaciones de cultivos</p>
+      <div className="flex items-center justify-center h-full p-8">
+        <div className="text-center max-w-md">
+          <div className="text-7xl mb-4">🌍</div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-3">Bienvenido</h3>
+          <p className="text-gray-600">
+            Haz clic en el mapa para obtener recomendaciones de cultivos para
+            cualquier ubicación
+          </p>
         </div>
       </div>
     );
@@ -58,319 +69,342 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
     selectedCropIndex !== null
       ? cropData.top_recommendations[selectedCropIndex]
       : null;
-  const {
-    analysis_info,
-    climate_analysis,
-    data_quality,
-    climate_adaptation_summary,
-  } = cropData;
+  const { analysis_info, analysis_data_summary } = cropData;
 
   return (
-    <div className="crop-details-container">
+    <div className="h-full overflow-y-auto px-3 md:px-4 py-4 md:py-6 space-y-4 md:space-y-6 bg-gray-50">
       {/* Location Information */}
-      <div className="location-info">
-        {locationInfo ? (
-          <>
-            <h3>{getLocationName(locationInfo)}</h3>
-
-            {/* <p><strong></strong> </p> */}
-            {/* <p><strong>Coordenadas:</strong> {locationInfo.lat?.toFixed(4) || 'N/A'}°, {locationInfo.lng?.toFixed(4) || 'N/A'}°</p> */}
-          </>
-        ) : analysis_info?.coordinates ? (
-          <>
-            <p>
-              <strong>Coordenadas:</strong>{" "}
-              {analysis_info.coordinates.lat?.toFixed(4) || "N/A"}°,{" "}
+      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-3">
+          <h3 className="text-lg font-bold flex items-center gap-2">
+            <span>📍</span>
+            {locationInfo
+              ? getLocationName(locationInfo)
+              : analysis_info?.coordinates
+              ? `${analysis_info.coordinates.lat?.toFixed(4) || "N/A"}°, ${
+                  analysis_info.coordinates.lon?.toFixed(4) || "N/A"
+                }°`
+              : "Ubicación"}
+          </h3>
+        </div>
+        {/* <div className="p-4 space-y-2">
+          {locationInfo && analysis_info?.coordinates && (
+            <p className="text-sm text-gray-600 font-mono">
+              📐 {analysis_info.coordinates.lat?.toFixed(4) || "N/A"}°,{" "}
               {analysis_info.coordinates.lon?.toFixed(4) || "N/A"}°
             </p>
-          </>
-        ) : (
-          <p>Ubicación no disponible</p>
-        )}
-        {analysis_info && (
-          <div className="analysis-info">
-            <p>
-              <strong>Fecha de Análisis:</strong> {analysis_info.analysis_date}
-            </p>
-            <p>
-              <strong>Cultivos Analizados:</strong>{" "}
-              {analysis_info.total_crops_analyzed}
-            </p>
-          </div>
-        )}
+          )}
+          {analysis_info && (
+            <div className="grid grid-cols-2 gap-3 pt-2 border-t">
+              <div className="bg-blue-50 rounded-lg p-3">
+                <p className="text-xs text-blue-600 mb-1">📅 Fecha Análisis</p>
+                <p className="font-mono text-sm font-semibold text-blue-900">
+                  {analysis_info.analysis_date}
+                </p>
+              </div>
+              <div className="bg-green-50 rounded-lg p-3">
+                <p className="text-xs text-green-600 mb-1">🌱 Cultivos</p>
+                <p className="font-mono text-sm font-semibold text-green-900">
+                  {analysis_info.total_crops_analyzed}
+                </p>
+              </div>
+            </div>
+          )}
+        </div> */}
       </div>
 
-      {/* Crop Recommendations - Always show first */}
-      {cropData && cropData.top_recommendations && (
-        <div className="crop-recommendations">
-          <h3>🌾 Cultivos Recomendados</h3>
-          <div className="recommendations-list">
-            {cropData.top_recommendations.map((crop: any, index: number) => (
-              <div
-                key={index}
-                className={`recommendation-item ${
-                  selectedCropIndex === index ? "selected" : ""
-                }`}
-                onClick={() => onCropSelect && onCropSelect(index)}
+      {/* Top Recommendations */}
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-4 py-3 border-b-2 border-green-200">
+          <h3 className="text-lg font-bold text-green-900 flex items-center gap-2">
+            Selecciona uno de {cropData.top_recommendations.length} cultivo
+            {cropData.top_recommendations.length !== 1 ? "s" : ""} que puedes
+            jugar
+          </h3>
+        </div>
+        <div className="divide-y divide-gray-200">
+          {cropData.top_recommendations.map((crop, index) => (
+            <div
+              key={index}
+              className={`w-full transition-all ${
+                selectedCropIndex === index
+                  ? "bg-green-100 border-l-4 border-green-600"
+                  : ""
+              }`}
+            >
+              <button
+                onClick={() => onCropSelect(index)}
+                className="w-full p-4 text-left hover:bg-green-50 transition-all"
               >
-                <div className="crop-name">{crop.crop}</div>
-                <div
-                  className={`crop-score score-${getScoreClass(
-                    crop.overall_suitability_score || 0
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-900 mb-1 flex items-center gap-2">
+                      {crop.crop_name}
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <span
+                        className={`px-2 py-0.5 rounded-full font-semibold ${getConfidenceBadgeClass(
+                          crop.confidence_level
+                        )}`}
+                      >
+                        {getConfidenceLevelLabel(crop.confidence_level)}
+                      </span>
+                      <span className="text-gray-400">•</span>
+                      <span className="font-mono">
+                        {crop.growth_period_days} días
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    className={`text-xl font-bold px-4 py-2 rounded-lg ${getScoreColorClass(
+                      crop.suitability_score
+                    )}`}
+                  >
+                    {Math.round(crop.suitability_score)}%
+                  </div>
+                </div>
+              </button>
+              {selectedCropIndex === index && (
+                <div className="px-4 pb-4">
+                  <a
+                    href={`/dashboard-game?crop=${encodeURIComponent(
+                      crop.crop_name.toLowerCase()
+                    )}`}
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all active:scale-95 text-sm"
+                  >
+                    <span>🎮</span>
+                    Jugar con {crop.crop_name}
+                  </a>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Quick Info - Solo cuando NO hay cultivo seleccionado */}
+      {!selectedCrop && analysis_info && (
+        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200">
+          <p className="text-sm text-gray-700 text-center">
+            <span className="font-semibold text-blue-800">💡 Consejo:</span>{" "}
+            Selecciona un cultivo para ver información detallada
+          </p>
+        </div>
+      )}
+
+      {/* Selected Crop Details */}
+      {selectedCrop && (
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-4 py-3">
+            <h3 className="text-lg font-bold flex items-center gap-2">
+              <span>🎯</span>
+              Detalles: {selectedCrop.crop_name}
+            </h3>
+          </div>
+          <div className="p-4 space-y-4">
+            {/* Score Badge */}
+            <div className="flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">
+                  Puntuación de Idoneidad
+                </p>
+                <p className="text-3xl font-bold text-green-800">
+                  {Math.round(selectedCrop.suitability_score)}%
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-gray-600 mb-1">Potencial</p>
+                <p
+                  className={`text-lg font-semibold ${getYieldPotentialColorClass(
+                    selectedCrop.yield_potential
                   )}`}
                 >
-                  {Math.round((crop.overall_suitability_score || 0) * 100)}%
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Climate Analysis */}
-      {climate_analysis && (
-        <div className="climate-analysis">
-          <h3>🌡️ Análisis Climático</h3>
-
-          {/* Climate Shifts */}
-          {climate_analysis.climate_shift_detected && (
-            <div className="climate-shift">
-              <h4>⚠️ Cambio Climático Detectado</h4>
-              <p>{climate_analysis.climate_shift_description}</p>
-            </div>
-          )}
-
-          {/* Frost Information */}
-          {climate_analysis.frost_probability !== undefined && (
-            <div className="frost-info">
-              <h4>❄️ Información de Heladas</h4>
-              <p>
-                <strong>Probabilidad de Heladas:</strong>{" "}
-                {(climate_analysis.frost_probability * 100).toFixed(1)}%
-              </p>
-              {climate_analysis.min_temperature && (
-                <p>
-                  <strong>Temperatura Mínima:</strong>{" "}
-                  {climate_analysis.min_temperature.toFixed(1)}°C
+                  {getYieldPotentialLabel(selectedCrop.yield_potential)}
                 </p>
-              )}
-            </div>
-          )}
-
-          {/* Recent Conditions */}
-          {climate_analysis.recent_conditions && (
-            <div className="recent-conditions">
-              <h4>📊 Condiciones Recientes</h4>
-              <div className="conditions-grid">
-                {climate_analysis.recent_conditions.temperature_c && (
-                  <div className="condition-item">
-                    <span className="label">Temperatura:</span>
-                    <span className="value">
-                      {climate_analysis.recent_conditions.temperature_c.toFixed(
-                        1
-                      )}
-                      °C
-                    </span>
-                  </div>
-                )}
-                {climate_analysis.recent_conditions.precipitation_mm && (
-                  <div className="condition-item">
-                    <span className="label">Precipitación:</span>
-                    <span className="value">
-                      {climate_analysis.recent_conditions.precipitation_mm.toFixed(
-                        1
-                      )}{" "}
-                      mm
-                    </span>
-                  </div>
-                )}
-                {climate_analysis.recent_conditions.soil_moisture_pct && (
-                  <div className="condition-item">
-                    <span className="label">Humedad del Suelo:</span>
-                    <span className="value">
-                      {(
-                        climate_analysis.recent_conditions.soil_moisture_pct *
-                        100
-                      ).toFixed(1)}
-                      %
-                    </span>
-                  </div>
-                )}
-                {climate_analysis.recent_conditions.ndvi && (
-                  <div className="condition-item">
-                    <span className="label">NDVI:</span>
-                    <span className="value">
-                      {(
-                        climate_analysis.recent_conditions.ndvi / 10000
-                      ).toFixed(3)}
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
-          )}
-        </div>
-      )}
 
-      {/* Seasonal Context */}
-      {analysis_info?.seasonal_context && (
-        <div className="seasonal-context">
-          <h3>📅 Contexto Estacional</h3>
-          <div className="season-info">
-            <h4>{analysis_info.seasonal_context.season_es}</h4>
-            <p>{analysis_info.seasonal_context.description}</p>
-            <div className="season-details">
-              <p>
-                <strong>Período:</strong>{" "}
-                {analysis_info.seasonal_context.months}
-              </p>
-              <p>
-                <strong>Riesgo de Heladas:</strong>
-                <span
-                  className={`frost-risk ${analysis_info.seasonal_context.frost_risk}`}
-                >
-                  {analysis_info.seasonal_context.frost_risk}
-                </span>
-              </p>
-            </div>
-            {analysis_info.seasonal_context.recommended_activities && (
-              <div className="recommended-activities">
-                <p>
-                  <strong>Actividades Recomendadas:</strong>
+            {/* Planting Details */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-blue-50 rounded-lg p-3">
+                <p className="text-xs text-blue-600 mb-1">
+                  📅 Fecha de Siembra
                 </p>
-                <ul>
-                  {analysis_info.seasonal_context.recommended_activities.map(
-                    (activity: string, index: number) => (
-                      <li key={index}>{activity}</li>
-                    )
-                  )}
-                </ul>
+                <p className="font-mono text-sm font-semibold text-blue-900">
+                  {selectedCrop.planting_date}
+                </p>
+              </div>
+              <div className="bg-green-50 rounded-lg p-3">
+                <p className="text-xs text-green-600 mb-1">
+                  🌾 Fecha de Cosecha
+                </p>
+                <p className="font-mono text-sm font-semibold text-green-900">
+                  {selectedCrop.harvest_date}
+                </p>
+              </div>
+              <div className="bg-purple-50 rounded-lg p-3">
+                <p className="text-xs text-purple-600 mb-1">⏱️ Duración</p>
+                <p className="font-mono text-sm font-semibold text-purple-900">
+                  {selectedCrop.growth_period_days} días
+                </p>
+              </div>
+              <div className="bg-amber-50 rounded-lg p-3 border border-amber-200">
+                <p className="text-xs text-amber-600 mb-1">📊 Confianza</p>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`text-xs px-2 py-0.5 rounded-full font-semibold ${getConfidenceBadgeClass(
+                      selectedCrop.confidence_level
+                    )}`}
+                  >
+                    {getConfidenceLevelLabel(selectedCrop.confidence_level)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Environmental Conditions */}
+            {analysis_data_summary && (
+              <div className="border-t pt-4">
+                <h4 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                  <span>📊</span>
+                  Condiciones Ambientales
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Temperature */}
+                  <div className="bg-orange-50 rounded-lg p-3 border border-orange-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs text-orange-600 font-semibold">
+                        🌡️ Temperatura
+                      </p>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full ${getQualityBadgeClass(
+                          analysis_data_summary.temperature.quality
+                        )}`}
+                      >
+                        {analysis_data_summary.temperature.quality}
+                      </span>
+                    </div>
+                    <p className="font-mono text-lg font-bold text-orange-900">
+                      {analysis_data_summary.temperature.mean}°C
+                    </p>
+                    <p className="text-xs text-orange-600 mt-1">
+                      {analysis_data_summary.temperature.range}
+                    </p>
+                  </div>
+
+                  {/* Precipitation */}
+                  <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs text-blue-600 font-semibold">
+                        💧 Precipitación
+                      </p>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full ${getQualityBadgeClass(
+                          analysis_data_summary.precipitation.quality
+                        )}`}
+                      >
+                        {analysis_data_summary.precipitation.quality}
+                      </span>
+                    </div>
+                    <p className="font-mono text-lg font-bold text-blue-900">
+                      {analysis_data_summary.precipitation.mean} mm
+                    </p>
+                    <p className="text-xs text-blue-600 mt-1">
+                      {analysis_data_summary.precipitation.range}
+                    </p>
+                  </div>
+
+                  {/* Soil Moisture */}
+                  <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs text-green-600 font-semibold">
+                        🌱 Humedad Suelo
+                      </p>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full ${getQualityBadgeClass(
+                          analysis_data_summary.soil_moisture.quality
+                        )}`}
+                      >
+                        {analysis_data_summary.soil_moisture.quality}
+                      </span>
+                    </div>
+                    <p className="font-mono text-lg font-bold text-green-900">
+                      {analysis_data_summary.soil_moisture.mean}%
+                    </p>
+                    <p className="text-xs text-green-600 mt-1">
+                      {analysis_data_summary.soil_moisture.range}
+                    </p>
+                  </div>
+
+                  {/* NDVI */}
+                  <div className="bg-emerald-50 rounded-lg p-3 border border-emerald-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs text-emerald-600 font-semibold">
+                        📈 NDVI
+                      </p>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full ${getQualityBadgeClass(
+                          analysis_data_summary.ndvi.quality
+                        )}`}
+                      >
+                        {analysis_data_summary.ndvi.quality}
+                      </span>
+                    </div>
+                    <p className="font-mono text-lg font-bold text-emerald-900">
+                      {analysis_data_summary.ndvi.mean}
+                    </p>
+                    <p className="text-xs text-emerald-600 mt-1">
+                      {analysis_data_summary.ndvi.range}
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
-          </div>
-        </div>
-      )}
 
-      {/* Data Quality */}
-      {data_quality && (
-        <div className="data-quality">
-          <h3>📈 Calidad de Datos</h3>
-          <div className="quality-indicators">
-            {Object.entries(data_quality).map(([key, quality]) => (
-              <div key={key} className={`quality-item ${quality}`}>
-                <span className="label">{getQualityLabel(key)}:</span>
-                <span className="quality-badge">{String(quality)}</span>
+            {/* Scores Breakdown */}
+            <div className="border-t pt-4">
+              <h4 className="text-sm font-bold text-gray-700 mb-3">
+                Análisis de Puntuación
+              </h4>
+              <div className="space-y-2">
+                <ScoreBar
+                  label="Puntuación Base"
+                  value={selectedCrop.base_score}
+                  color="blue"
+                />
+                <ScoreBar
+                  label="Multiplicador Regional"
+                  value={selectedCrop.regional_multiplier}
+                  color="purple"
+                />
               </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Selected Crop Details - Only show when a crop is selected */}
-      {selectedCrop && (
-        <div className="crop-details">
-          <h3>🌾 Recomendaciones Principales</h3>
-          <div className="selected-crop">
-            <div className="crop-header">
-              <h4>{selectedCrop.crop}</h4>
-              <span
-                className={`score score-${getScoreClass(
-                  selectedCrop.overall_suitability_score || 0
-                )}`}
-              >
-                {Math.round(
-                  (selectedCrop.overall_suitability_score || 0) * 100
-                )}
-                %
-              </span>
             </div>
-            <p className="summary">{selectedCrop.recommendation_summary}</p>
-            <div className="crop-info">
-              <p>
-                <strong>Mejor época:</strong>{" "}
-                {selectedCrop.best_planting_window}
-              </p>
-              <p>
-                <strong>Confianza:</strong> {selectedCrop.confidence_level}
-              </p>
-              {selectedCrop.climate_shift_detected && (
-                <p className="climate-warning">⚠️ Cambio climático detectado</p>
+
+            {/* Analysis Log */}
+            {selectedCrop.analysis_log &&
+              selectedCrop.analysis_log.length > 0 && (
+                <div className="border-t pt-4">
+                  <details className="group">
+                    <summary className="cursor-pointer text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                      <span className="group-open:rotate-90 transition-transform">
+                        ▶
+                      </span>
+                      Registro de Análisis ({selectedCrop.analysis_log.length})
+                    </summary>
+                    <div className="mt-2 bg-gray-50 rounded-lg p-3 max-h-48 overflow-y-auto">
+                      <ul className="text-xs text-gray-700 space-y-1 font-mono">
+                        {selectedCrop.analysis_log.map((log, idx) => (
+                          <li key={idx} className="flex gap-2">
+                            <span className="text-gray-400">{idx + 1}.</span>
+                            <span>{log}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </details>
+                </div>
               )}
-            </div>
-
-            {/* Adaptive Factors */}
-            {selectedCrop.adaptive_factors && (
-              <div className="adaptive-factors">
-                <h5>Factores Adaptativos:</h5>
-                <div className="factors-grid">
-                  <div className="factor-item">
-                    <span>NDVI:</span>
-                    <span>
-                      {selectedCrop.adaptive_factors.ndvi_score?.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="factor-item">
-                    <span>Temperatura:</span>
-                    <span>
-                      {selectedCrop.adaptive_factors.temperature_score?.toFixed(
-                        2
-                      )}
-                    </span>
-                  </div>
-                  <div className="factor-item">
-                    <span>Humedad:</span>
-                    <span>
-                      {selectedCrop.adaptive_factors.soil_moisture_score?.toFixed(
-                        2
-                      )}
-                    </span>
-                  </div>
-                  <div className="factor-item">
-                    <span>Pendiente:</span>
-                    <span>
-                      {selectedCrop.adaptive_factors.slope_score?.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Frost Risk Assessment */}
-            {selectedCrop.frost_risk_assessment && (
-              <div className="frost-assessment">
-                <h5>Evaluación de Riesgo de Heladas:</h5>
-                <div className="frost-details">
-                  <p>
-                    <strong>Tolerancia:</strong>{" "}
-                    {selectedCrop.frost_risk_assessment.frost_tolerance}
-                  </p>
-                  <p>
-                    <strong>Impacto:</strong>{" "}
-                    {(
-                      selectedCrop.frost_risk_assessment.frost_impact_score *
-                      100
-                    ).toFixed(1)}
-                    %
-                  </p>
-                  <p>
-                    <strong>Riesgo Estacional:</strong>{" "}
-                    {selectedCrop.frost_risk_assessment.seasonal_frost_risk}
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
-        </div>
-      )}
-
-      {/* Climate Adaptation Summary */}
-      {climate_adaptation_summary && (
-        <div className="climate-summary">
-          <h3>🌱 Resumen de Adaptación Climática</h3>
-          <SafeRenderer
-            data={climate_adaptation_summary}
-            fallback="Información climática no disponible"
-          />
         </div>
       )}
     </div>
@@ -382,6 +416,69 @@ const getScoreClass = (score: number): string => {
   if (score >= 0.6) return "good";
   if (score >= 0.4) return "moderate";
   return "low";
+};
+
+const getScoreColorClass = (score: number): string => {
+  if (score >= 0.8) return "text-green-600";
+  if (score >= 0.6) return "text-lime-600";
+  if (score >= 0.4) return "text-yellow-600";
+  return "text-orange-600";
+};
+
+const getQualityBadgeClass = (quality: string): string => {
+  const qualityLower = quality.toLowerCase();
+  if (qualityLower === "high" || qualityLower === "alta") {
+    return "bg-green-100 text-green-800 border border-green-300";
+  }
+  if (qualityLower === "medium" || qualityLower === "media") {
+    return "bg-yellow-100 text-yellow-800 border border-yellow-300";
+  }
+  if (qualityLower === "low" || qualityLower === "baja") {
+    return "bg-orange-100 text-orange-800 border border-orange-300";
+  }
+  return "bg-gray-100 text-gray-800 border border-gray-300";
+};
+
+// ScoreBar Component
+interface ScoreBarProps {
+  label: string;
+  value: number;
+  color: "blue" | "green" | "purple" | "amber";
+}
+
+const ScoreBar: React.FC<ScoreBarProps> = ({ label, value, color }) => {
+  const colorClasses = {
+    blue: "bg-blue-500",
+    green: "bg-green-500",
+    purple: "bg-purple-500",
+    amber: "bg-amber-500",
+  };
+
+  const bgClasses = {
+    blue: "bg-blue-100",
+    green: "bg-green-100",
+    purple: "bg-purple-100",
+    amber: "bg-amber-100",
+  };
+
+  return (
+    <div>
+      <div className="flex justify-between text-xs mb-1">
+        <span className="text-gray-600">{label}</span>
+        <span className="font-mono font-semibold text-gray-800">
+          {Math.round(value)}%
+        </span>
+      </div>
+      <div
+        className={`w-full h-2 ${bgClasses[color]} rounded-full overflow-hidden`}
+      >
+        <div
+          className={`h-full ${colorClasses[color]} transition-all duration-500`}
+          style={{ width: `${value}%` }}
+        />
+      </div>
+    </div>
+  );
 };
 
 const getQualityLabel = (key: string): string => {
@@ -424,4 +521,48 @@ const getLocationName = (locationInfo: any): string => {
   }
 
   return "Ubicación desconocida";
+};
+
+// Helper para formatear yield_potential (potencial de rendimiento)
+const getYieldPotentialLabel = (
+  potential: "high" | "medium" | "low"
+): string => {
+  const labels = {
+    high: "Alto",
+    medium: "Medio",
+    low: "Bajo",
+  };
+  return labels[potential] || potential;
+};
+
+// Helper para formatear confidence_level (nivel de confianza)
+const getConfidenceLevelLabel = (level: "high" | "medium" | "low"): string => {
+  const labels = {
+    high: "Alta",
+    medium: "Media",
+    low: "Baja",
+  };
+  return labels[level] || level;
+};
+
+// Helper para obtener clases de color según yield_potential
+const getYieldPotentialColorClass = (
+  potential: "high" | "medium" | "low"
+): string => {
+  const colors = {
+    high: "text-green-600",
+    medium: "text-amber-600",
+    low: "text-orange-600",
+  };
+  return colors[potential] || "text-gray-600";
+};
+
+// Helper para obtener clases de badge según confidence_level
+const getConfidenceBadgeClass = (level: "high" | "medium" | "low"): string => {
+  const classes = {
+    high: "bg-green-100 text-green-800 border border-green-300",
+    medium: "bg-yellow-100 text-yellow-800 border border-yellow-300",
+    low: "bg-orange-100 text-orange-800 border border-orange-300",
+  };
+  return classes[level] || "bg-gray-100 text-gray-800 border border-gray-300";
 };

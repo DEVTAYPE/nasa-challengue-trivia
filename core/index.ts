@@ -7,3 +7,6 @@ export * from "./domain/entities/GameSession";
 
 // Application
 export { useGameStore } from "./application/useGameStore";
+
+// Utils
+export * from "./utils/crop-mapper";

@@ -16,12 +16,14 @@ import { Level, Difficulty } from "@/core";
 import { useGameStore } from "@/core";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 interface LevelSelectDetailProps {
   level: Level;
   setSelectedLevel: (level: Level | null) => void;
   popoverRef: React.RefObject<HTMLDivElement | null>;
   Icon: React.ComponentType<any>;
+  cropType: string;
 }
 
 export const LevelSelectDetail: React.FC<LevelSelectDetailProps> = ({
@@ -29,10 +31,12 @@ export const LevelSelectDetail: React.FC<LevelSelectDetailProps> = ({
   setSelectedLevel,
   popoverRef,
   Icon,
+  cropType,
 }) => {
   const router = useRouter();
   const startLevel = useGameStore((state) => state.startLevel);
   const isLoading = useGameStore((state) => state.isLoading);
+  const { t, language } = useLanguage();
 
   const getDifficultyColor = (difficulty: Difficulty) => {
     switch (difficulty) {
@@ -52,16 +56,20 @@ export const LevelSelectDetail: React.FC<LevelSelectDetailProps> = ({
   const handleStartLevel = async () => {
     if (level.status === "locked") {
       toast.error(
-        "Este nivel está bloqueado. Completa el nivel anterior primero."
+        language === "es"
+          ? "Este nivel está bloqueado. Completa el nivel anterior primero."
+          : "This level is locked. Complete the previous level first."
       );
       return;
     }
 
     try {
       await startLevel(level.id);
-      router.push(`/dashboard-game/${level.id}`);
+      router.push(`/dashboard-game/trivia?crop=${cropType}&level=${level.id}`);
     } catch (error) {
-      toast.error("Error al iniciar el nivel");
+      toast.error(
+        language === "es" ? "Error al iniciar el nivel" : "Error starting level"
+      );
       console.error(error);
     }
   };
@@ -100,18 +108,18 @@ export const LevelSelectDetail: React.FC<LevelSelectDetailProps> = ({
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2 flex-wrap">
                   <Badge className={getDifficultyColor(level.difficulty)}>
-                    {level.difficulty}
+                    {t.dashboard.difficulties[level.difficulty]}
                   </Badge>
                   <Badge variant="outline" className="capitalize">
                     {level.status === "completed"
-                      ? "Completado"
+                      ? t.dashboard.completed
                       : level.status === "available"
-                      ? "Disponible"
-                      : "Bloqueado"}
+                      ? t.dashboard.available
+                      : t.dashboard.locked}
                   </Badge>
                 </div>
                 <CardTitle className="text-xl leading-tight">
-                  {level.title}
+                  {t.dashboard.levels[level.id]?.title || level.title}
                 </CardTitle>
               </div>
               <div
@@ -127,7 +135,7 @@ export const LevelSelectDetail: React.FC<LevelSelectDetailProps> = ({
               </div>
             </div>
             <CardDescription className="text-sm leading-relaxed">
-              {level.description}
+              {t.dashboard.levels[level.id]?.description || level.description}
             </CardDescription>
           </CardHeader>
 
@@ -136,7 +144,7 @@ export const LevelSelectDetail: React.FC<LevelSelectDetailProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-muted/50 rounded-lg p-3">
                 <div className="text-xs text-muted-foreground mb-1">
-                  Duración
+                  {t.dashboard.duration}
                 </div>
                 <div className="text-xl font-bold">{level.duration}</div>
               </div>
@@ -152,19 +160,19 @@ export const LevelSelectDetail: React.FC<LevelSelectDetailProps> = ({
               {level.status === "completed" && (
                 <>
                   <CheckCircle2 className="w-4 h-4 mr-2" />
-                  Repetir Nivel
+                  {t.dashboard.repeatLevel}
                 </>
               )}
               {level.status === "available" && (
                 <>
                   <Play className="w-4 h-4 mr-2" />
-                  Comenzar Aventura
+                  {t.dashboard.startAdventure}
                 </>
               )}
               {level.status === "locked" && (
                 <>
                   <Lock className="w-4 h-4 mr-2" />
-                  Nivel Bloqueado
+                  {t.dashboard.levelLocked}
                 </>
               )}
             </Button>
@@ -174,7 +182,7 @@ export const LevelSelectDetail: React.FC<LevelSelectDetailProps> = ({
               <kbd className="px-2 py-1 bg-muted/50 border border-border rounded text-[10px] font-mono">
                 ESC
               </kbd>
-              <span>para cerrar</span>
+              <span>{t.dashboard.closeHint}</span>
             </div>
           </CardContent>
         </Card>

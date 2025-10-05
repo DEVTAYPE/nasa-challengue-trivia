@@ -394,43 +394,11 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
                 />
               </div>
             </div>
-
-            {/* Analysis Log */}
-            {selectedCrop.analysis_log &&
-              selectedCrop.analysis_log.length > 0 && (
-                <div className="border-t pt-4">
-                  <details className="group">
-                    <summary className="cursor-pointer text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-                      <span className="group-open:rotate-90 transition-transform">
-                        ▶
-                      </span>
-                      Registro de Análisis ({selectedCrop.analysis_log.length})
-                    </summary>
-                    <div className="mt-2 bg-gray-50 rounded-lg p-3 max-h-48 overflow-y-auto">
-                      <ul className="text-xs text-gray-700 space-y-1 font-mono">
-                        {selectedCrop.analysis_log.map((log, idx) => (
-                          <li key={idx} className="flex gap-2">
-                            <span className="text-gray-400">{idx + 1}.</span>
-                            <span>{log}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </details>
-                </div>
-              )}
           </div>
         </div>
       )}
     </div>
   );
-};
-
-const getScoreClass = (score: number): string => {
-  if (score >= 0.8) return "excellent";
-  if (score >= 0.6) return "good";
-  if (score >= 0.4) return "moderate";
-  return "low";
 };
 
 const getScoreColorClass = (score: number): string => {

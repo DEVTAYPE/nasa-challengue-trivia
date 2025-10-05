@@ -3,20 +3,8 @@ export interface MapResult2 {
   analysis_info: Analysisinfo;
   buffer_geojson: Buffergeojson;
   detailed_recommendations: Detailedrecommendation[];
+  questions: QuestionMap[];
   top_recommendations: Detailedrecommendation[];
-}
-
-export interface Detailedrecommendation {
-  analysis_log: string[];
-  base_score: number;
-  confidence_level: "high" | "medium" | "low";
-  crop_name: string;
-  growth_period_days: number;
-  harvest_date: string;
-  planting_date: string;
-  regional_multiplier: number;
-  suitability_score: number;
-  yield_potential: "high" | "medium" | "low";
 }
 
 export interface Buffergeojson {
@@ -60,4 +48,30 @@ export interface Ndvi {
   mean: number;
   quality: string;
   range: string;
+}
+
+// =========================}
+
+interface Detailedrecommendation {
+  // analysis_log: string[];
+  base_score: number;
+  confidence_level: "high" | "medium" | "low";
+  crop_name: string;
+  growth_period_days: number;
+  harvest_date: string;
+  planting_date: string;
+  regional_multiplier: number;
+  suitability_score: number;
+  yield_potential: "high" | "medium" | "low";
+}
+
+interface QuestionMap {
+  correctAnswer: number;
+  cropType: string;
+  id: string;
+  levelId: number;
+  optionExplanations: string[];
+  options: string[];
+  points: number;
+  question: string;
 }

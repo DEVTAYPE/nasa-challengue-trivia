@@ -1,9 +1,15 @@
-import { HeroSection } from "@/modules/home/components";
+import {
+  HeroSection,
+  AboutSection,
+  HistorySection,
+} from "@/modules/home/components";
 
 export default function Home() {
   return (
-    <main>
+    <main className="overflow-x-hidden">
       <HeroSection />
+      <AboutSection />
+      <HistorySection />
     </main>
   );
 }

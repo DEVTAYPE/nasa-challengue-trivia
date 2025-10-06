@@ -1,10 +1,10 @@
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { Toaster } from "@/components/ui/sonner";
+import { LanguageProvider } from "@/lib/i18n/language-context";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
 import { GameProvider } from "./providers";
-import { LanguageProvider } from "@/lib/i18n/language-context";
-import { LanguageSwitcher } from "@/components/language-switcher";
 
 // Inter - Fuente principal para la interfaz
 // Optimizada para legibilidad en pantallas digitales
@@ -37,6 +37,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
+      <head>
+        <meta
+          http-equiv="Content-Security-Policy"
+          content="upgrade-insecure-requests"
+        />
+      </head>
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased font-sans`}
       >

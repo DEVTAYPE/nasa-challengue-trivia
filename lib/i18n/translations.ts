@@ -160,7 +160,8 @@ export const translations: Record<Language, Translations> = {
       badge: "CropSense — NASA Satellite Crop Advisor",
       title: "Optimize planting using five years of satellite and climate data",
       titleHighlight: "Learn by playing",
-      subtitle: "Analyzing 5 years of NASA data (MODIS, ERA5, SRTM) + user input (coordinates, temperature, irrigation, altitude) via a smart questionnaire to recommend optimal crops and planting windows!",
+      subtitle:
+        "Analyzing 5 years of NASA data (MODIS, ERA5, SRTM) + user input (coordinates, temperature, irrigation, altitude) via a smart questionnaire to recommend optimal crops and planting windows!",
       cta: "🌱 Start Playing",
     },
 
@@ -331,7 +332,8 @@ export const translations: Record<Language, Translations> = {
       badge: "Conectando la sabiduría ancestral con los datos de la NASA",
       title: "Aprende a cultivar como un experto usando datos reales de",
       titleHighlight: "satélites de la NASA.",
-      subtitle: "¡Descubre el poder de la agricultura sostenible en los Andes!",
+      subtitle:
+        "¡Analizamos 5 años de datos de la NASA (MODIS, ERA5, SRTM) + información proporcionada por los usuarios (coordenadas, temperatura, riego, altitud) mediante un cuestionario inteligente para recomendar los cultivos y las épocas de siembra óptimos!",
       cta: "🌱 Empezar a Jugar",
     },
 

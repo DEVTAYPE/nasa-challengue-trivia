@@ -34,7 +34,8 @@ export const HeroSection = () => {
 
             {/* Main Heading */}
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground drop-shadow-2xl leading-tight">
-              {t.hero.title}
+              ANDEAN SPACE
+              {/* {t.hero.title} */}
               {/* <span className="block text-primary drop-shadow-[0_0_30px_rgba(76,175,80,0.5)]">
                 {t.hero.titleHighlight}
               </span> */}

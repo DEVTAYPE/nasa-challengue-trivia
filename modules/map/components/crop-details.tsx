@@ -11,10 +11,10 @@ interface CropDetailsProps {
   error: string | null;
 }
 
-// Helper para almacenar preguntas del mapa en localStorage
+// Helper to store map questions in localStorage
 const storeMapQuestions = (cropName: string, questions: any[]) => {
   if (questions && questions.length > 0) {
-    const first6Questions = questions.slice(0, 6); // Solo las primeras 6
+    const first6Questions = questions.slice(0, 6); // Only the first 6
     localStorage.setItem(
       `map-questions-${cropName.toLowerCase()}`,
       JSON.stringify(first6Questions)
@@ -22,7 +22,7 @@ const storeMapQuestions = (cropName: string, questions: any[]) => {
   }
 };
 
-// Helper para almacenar metadata del último análisis
+// Helper to store metadata of the last analysis
 const storeLastAnalysis = (
   lat: number,
   lng: number,
@@ -33,7 +33,7 @@ const storeLastAnalysis = (
     lat,
     lng,
     date,
-    crops, // Lista de todos los cultivos del análisis
+    crops, // List of all crops from the analysis
     timestamp: Date.now(),
   };
   localStorage.setItem("last-map-analysis", JSON.stringify(analysisData));
@@ -49,34 +49,34 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
 }) => {
   const { t, language } = useLanguage();
 
-  // Almacenar preguntas cuando lleguen datos del mapa
+  // Store questions when map data arrives
   useEffect(() => {
     if (
       cropData?.detailed_recommendations &&
       cropData.detailed_recommendations.length > 0
     ) {
       console.log(
-        "📦 Procesando recomendaciones del backend:",
+        "📦 Processing backend recommendations:",
         cropData.detailed_recommendations
       );
 
-      // Procesar cada recomendación (cada cultivo tiene sus preguntas)
+      // Process each recommendation (each crop has its questions)
       cropData.detailed_recommendations.forEach((recommendation) => {
         const cropName = recommendation.crop_name.toLowerCase();
 
-        // Las preguntas vienen dentro de cada recommendation
+        // Questions come within each recommendation
         if (recommendation.questions && recommendation.questions.length > 0) {
-          // Almacenar las primeras 6 preguntas del cultivo
+          // Store the first 6 questions of the crop
           storeMapQuestions(cropName, recommendation.questions);
           console.log(
-            `✅ ${recommendation.questions.length} preguntas guardadas para ${cropName}`
+            `✅ ${recommendation.questions.length} questions saved for ${cropName}`
           );
         } else {
-          console.log(`⚠️ ${cropName} no tiene preguntas`);
+          console.log(`⚠️ ${cropName} has no questions`);
         }
       });
 
-      // Guardar metadata del análisis con TODOS los cultivos del backend
+      // Save analysis metadata with ALL crops from backend
       if (cropData.analysis_info) {
         const allCrops = cropData.detailed_recommendations.map((rec) =>
           rec.crop_name.toLowerCase()
@@ -87,7 +87,7 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
           cropData.analysis_info.analysis_date,
           allCrops
         );
-        console.log("✅ Metadata del análisis guardada:", {
+        console.log("✅ Analysis metadata saved:", {
           crops: allCrops,
           location: cropData.analysis_info.coordinates,
         });
@@ -162,7 +162,7 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
               ? `${analysis_info.coordinates.lat?.toFixed(4) || "N/A"}°, ${
                   analysis_info.coordinates.lon?.toFixed(4) || "N/A"
                 }°`
-              : "Ubicación"}
+              : t.map.location}
           </h3>
         </div>
       </div>
@@ -236,7 +236,7 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
         </div>
       </div>
 
-      {/* Quick Info - Solo cuando NO hay cultivo seleccionado */}
+      {/* Quick Info - Only when NO crop is selected */}
       {!selectedCrop && analysis_info && (
         <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200">
           <p className="text-sm text-gray-700 text-center">
@@ -254,7 +254,7 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
           <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white px-4 py-3">
             <h3 className="text-lg font-bold flex items-center gap-2">
               <span>🎯</span>
-              Detalles: {selectedCrop.crop_name}
+              {language === "es" ? "Detalles" : "Details"}: {selectedCrop.crop_name}
             </h3>
           </div>
           <div className="p-4 space-y-4">
@@ -262,7 +262,7 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
             <div className="flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4">
               <div>
                 <p className="text-sm text-gray-600 mb-1">
-                  Puntuación de Idoneidad
+                  {language === "es" ? "Puntuación de Idoneidad" : "Suitability Score"}
                 </p>
                 <p className="text-3xl font-bold text-green-800">
                   {Math.round(selectedCrop.suitability_score)}%
@@ -274,7 +274,7 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-blue-50 rounded-lg p-3">
                 <p className="text-xs text-blue-600 mb-1">
-                  📅 Fecha de Siembra
+                  📅 {language === "es" ? "Fecha de Siembra" : "Planting Date"}
                 </p>
                 <p className="font-mono text-sm font-semibold text-blue-900">
                   {selectedCrop.planting_date}
@@ -282,16 +282,18 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
               </div>
               <div className="bg-green-50 rounded-lg p-3">
                 <p className="text-xs text-green-600 mb-1">
-                  🌾 Fecha de Cosecha
+                  🌾 {language === "es" ? "Fecha de Cosecha" : "Harvest Date"}
                 </p>
                 <p className="font-mono text-sm font-semibold text-green-900">
                   {selectedCrop.harvest_date}
                 </p>
               </div>
               <div className="bg-purple-50 rounded-lg p-3">
-                <p className="text-xs text-purple-600 mb-1">⏱️ Duración</p>
+                <p className="text-xs text-purple-600 mb-1">
+                  ⏱️ {language === "es" ? "Duración" : "Duration"}
+                </p>
                 <p className="font-mono text-sm font-semibold text-purple-900">
-                  {selectedCrop.growth_period_days} días
+                  {selectedCrop.growth_period_days} {language === "es" ? "días" : "days"}
                 </p>
               </div>
             </div>
@@ -301,14 +303,14 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
               <div className="border-t pt-4">
                 <h4 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
                   <span>📊</span>
-                  Condiciones Ambientales
+                  {language === "es" ? "Condiciones Ambientales" : "Environmental Conditions"}
                 </h4>
                 <div className="grid grid-cols-2 gap-3">
                   {/* Temperature */}
                   <div className="bg-orange-50 rounded-lg p-3 border border-orange-200">
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-xs text-orange-600 font-semibold">
-                        🌡️ Temperatura
+                        🌡️ {language === "es" ? "Temperatura" : "Temperature"}
                       </p>
                       <span
                         className={`text-xs px-2 py-0.5 rounded-full ${getQualityBadgeClass(
@@ -330,7 +332,7 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
                   <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-xs text-blue-600 font-semibold">
-                        💧 Precipitación
+                        💧 {language === "es" ? "Precipitación" : "Precipitation"}
                       </p>
                       <span
                         className={`text-xs px-2 py-0.5 rounded-full ${getQualityBadgeClass(
@@ -352,7 +354,7 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
                   <div className="bg-green-50 rounded-lg p-3 border border-green-200">
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-xs text-green-600 font-semibold">
-                        🌱 Humedad Suelo
+                        🌱 {language === "es" ? "Humedad Suelo" : "Soil Moisture"}
                       </p>
                       <span
                         className={`text-xs px-2 py-0.5 rounded-full ${getQualityBadgeClass(
@@ -398,16 +400,16 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
             {/* Scores Breakdown */}
             <div className="border-t pt-4">
               <h4 className="text-sm font-bold text-gray-700 mb-3">
-                Análisis de Puntuación
+                {language === "es" ? "Análisis de Puntuación" : "Score Analysis"}
               </h4>
               <div className="space-y-2">
                 <ScoreBar
-                  label="Puntuación Base"
+                  label={language === "es" ? "Puntuación Base" : "Base Score"}
                   value={selectedCrop.base_score}
                   color="blue"
                 />
                 <ScoreBar
-                  label="Multiplicador Regional"
+                  label={language === "es" ? "Multiplicador Regional" : "Regional Multiplier"}
                   value={selectedCrop.regional_multiplier}
                   color="purple"
                 />
@@ -486,26 +488,26 @@ const ScoreBar: React.FC<ScoreBarProps> = ({ label, value, color }) => {
 const getQualityLabel = (key: string): string => {
   const labels: { [key: string]: string } = {
     ndvi_quality: "NDVI",
-    temp_quality: "Temperatura",
-    precip_quality: "Precipitación",
-    soil_quality: "Humedad del Suelo",
-    terrain_quality: "Terreno",
+    temp_quality: "Temperature",
+    precip_quality: "Precipitation",
+    soil_quality: "Soil Moisture",
+    terrain_quality: "Terrain",
   };
   return labels[key] || key;
 };
 
 const getLocationName = (locationInfo: any): string => {
-  if (!locationInfo) return "Ubicación desconocida";
+  if (!locationInfo) return "Unknown location";
 
-  // Prioridad: display_name > address components > coordinates
+  // Priority: display_name > address components > coordinates
   if (locationInfo.display_name) {
-    // Extraer solo el nombre principal (antes de la primera coma)
+    // Extract only the main name (before the first comma)
     return locationInfo.display_name.split(",")[0];
   }
 
   if (locationInfo.address) {
     const address = locationInfo.address;
-    // Prioridad: village > town > city > municipality > county > state
+    // Priority: village > town > city > municipality > county > state
     return (
       address.village ||
       address.town ||
@@ -513,41 +515,41 @@ const getLocationName = (locationInfo: any): string => {
       address.municipality ||
       address.county ||
       address.state ||
-      "Ubicación"
+      "Location"
     );
   }
 
-  // Fallback a coordenadas si no hay nombre
+  // Fallback to coordinates if no name
   if (locationInfo.lat && locationInfo.lng) {
     return `${locationInfo.lat.toFixed(4)}, ${locationInfo.lng.toFixed(4)}`;
   }
 
-  return "Ubicación desconocida";
+  return "Unknown location";
 };
 
-// Helper para formatear yield_potential (potencial de rendimiento)
+// Helper to format yield_potential (yield potential)
 const getYieldPotentialLabel = (
   potential: "high" | "medium" | "low"
 ): string => {
   const labels = {
-    high: "Alto",
-    medium: "Medio",
-    low: "Bajo",
+    high: "High",
+    medium: "Medium",
+    low: "Low",
   };
   return labels[potential] || potential;
 };
 
-// Helper para formatear confidence_level (nivel de confianza)
+// Helper to format confidence_level (confidence level)
 const getConfidenceLevelLabel = (level: "high" | "medium" | "low"): string => {
   const labels = {
-    high: "Alta",
-    medium: "Media",
-    low: "Baja",
+    high: "High",
+    medium: "Medium",
+    low: "Low",
   };
   return labels[level] || level;
 };
 
-// Helper para obtener clases de color según yield_potential
+// Helper to get color classes based on yield_potential
 const getYieldPotentialColorClass = (
   potential: "high" | "medium" | "low"
 ): string => {
@@ -559,7 +561,7 @@ const getYieldPotentialColorClass = (
   return colors[potential] || "text-gray-600";
 };
 
-// Helper para obtener clases de badge según confidence_level
+// Helper to get badge classes based on confidence_level
 const getConfidenceBadgeClass = (level: "high" | "medium" | "low"): string => {
   const classes = {
     high: "bg-green-100 text-green-800 border border-green-300",

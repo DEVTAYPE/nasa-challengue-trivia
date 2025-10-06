@@ -77,7 +77,7 @@ export const PopupStack: React.FC<PopupStackProps> = ({
   const handleClearAll = (): void => {
     if (
       window.confirm(
-        "¿Estás seguro de que quieres limpiar todos los análisis guardados?"
+        "¿Estás seguro de que quieres limpiar todos los Saved Reports?"
       )
     ) {
       const emptyStack = clearPopupStack();
@@ -144,7 +144,7 @@ export const PopupStack: React.FC<PopupStackProps> = ({
       <div className="p-6 text-center bg-gradient-to-br from-gray-50 to-green-50 m-4 rounded-xl border-2 border-dashed border-green-300">
         <div className="text-6xl mb-3">📍</div>
         <h3 className="text-lg font-bold text-gray-700 mb-2">
-          Análisis Guardados
+          Saved Reports
         </h3>
         <p className="text-sm text-gray-500">
           Haz clic en el mapa para crear tu primer análisis
@@ -159,7 +159,7 @@ export const PopupStack: React.FC<PopupStackProps> = ({
       <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-b-2 border-green-200 p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-bold text-green-800 flex items-center gap-2">
-            📍 Análisis Guardados
+            📍 Saved Reports
           </h3>
           <span className="bg-green-600 text-white text-sm font-bold px-3 py-1 rounded-full">
             {popups.length}
@@ -170,10 +170,10 @@ export const PopupStack: React.FC<PopupStackProps> = ({
         <div className="flex items-center justify-between text-xs">
           <div className="flex gap-3 text-gray-600">
             <span className="bg-white px-2 py-1 rounded-md border border-green-200">
-              Hoy: <strong className="text-green-700">{stats.today}</strong>
+              Today: <strong className="text-green-700">{stats.today}</strong>
             </span>
             <span className="bg-white px-2 py-1 rounded-md border border-green-200">
-              Semana:{" "}
+              Week:{" "}
               <strong className="text-green-700">{stats.thisWeek}</strong>
             </span>
           </div>
@@ -182,7 +182,7 @@ export const PopupStack: React.FC<PopupStackProps> = ({
             title="Limpiar todos los análisis"
             className="text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded-md transition-all text-xs font-medium flex items-center gap-1"
           >
-            🗑️ Limpiar
+            🗑️ Clean
           </button>
         </div>
       </div>

@@ -157,10 +157,10 @@ export const translations: Record<Language, Translations> = {
     },
 
     hero: {
-      badge: "Connecting Ancestral Wisdom with NASA Data",
-      title: "Learn to Cultivate Like an Expert Using Real Data from",
-      titleHighlight: "NASA Satellites.",
-      subtitle: "Discover the Power of Sustainable Agriculture in the Andes!",
+      badge: "CropSense — NASA Satellite Crop Advisor",
+      title: "Optimize planting using five years of satellite and climate data",
+      titleHighlight: "Learn by playing",
+      subtitle: "Analyzes 5 years of NASA data (MODIS, ERA5, SRTM) + user input (coords, temp, irrigation, altitude) via a smart questionnaire to recommend optimal crops & planting windows.!",
       cta: "🌱 Start Playing",
     },
 

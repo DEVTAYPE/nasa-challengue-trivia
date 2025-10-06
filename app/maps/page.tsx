@@ -174,8 +174,9 @@ const Page = () => {
 
             <Link
               href="/"
-              className="inline-block mt-4 text-sm text-green-50 bg-green-800 rounded-lg p-3 hover:bg-green-800/50 transition-colors"
+              className="flex items-center justify-center gap-2 mt-4 text-sm font-semibold text-white bg-green-800 rounded-lg px-4 py-3 hover:bg-green-900 transition-all shadow-md hover:shadow-lg active:scale-95"
             >
+              <span className="text-lg">🏠</span>
               {language === "es" ? "Volver a Inicio" : "Back to Home"}
             </Link>
 
@@ -207,21 +208,36 @@ const Page = () => {
           />
 
           {/* Mobile: Floating Action Buttons */}
-          <div className="lg:hidden fixed bottom-4 left-4 right-4 flex gap-3 z-[999]">
-            <button
-              onClick={() => setShowHistoryPanel(!showHistoryPanel)}
-              className="flex-1 bg-gradient-to-r from-green-600 to-emerald-500 text-white px-4 py-3 rounded-xl shadow-lg font-semibold flex items-center justify-center gap-2 hover:shadow-xl transition-all active:scale-95"
+          <div className="lg:hidden fixed bottom-4 left-4 right-4 z-[999]">
+            {/* Botones principales */}
+            <div className="flex gap-2 mb-2">
+              <button
+                onClick={() => setShowHistoryPanel(!showHistoryPanel)}
+                className="flex-1 bg-gradient-to-r from-green-600 to-emerald-500 text-white px-3 py-3 rounded-xl shadow-lg font-semibold flex items-center justify-center gap-2 hover:shadow-xl transition-all active:scale-95"
+              >
+                <span className="text-lg">📋</span>
+                <span className="hidden xs:inline">
+                  {language === "es" ? "Historial" : "History"}
+                </span>
+              </button>
+              <button
+                onClick={() => setShowDetailsPanel(!showDetailsPanel)}
+                className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-3 py-3 rounded-xl shadow-lg font-semibold flex items-center justify-center gap-2 hover:shadow-xl transition-all active:scale-95"
+              >
+                <span className="text-lg">📊</span>
+                <span className="hidden xs:inline">
+                  {language === "es" ? "Detalles" : "Details"}
+                </span>
+              </button>
+            </div>
+            {/* Botón de inicio */}
+            <Link
+              href="/"
+              className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-gray-700 to-gray-900 text-white px-4 py-3 rounded-xl shadow-lg font-semibold hover:shadow-xl transition-all active:scale-95"
             >
-              <span>📋</span>
-              {language === "es" ? "Historial" : "History"}
-            </button>
-            <button
-              onClick={() => setShowDetailsPanel(!showDetailsPanel)}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-3 rounded-xl shadow-lg font-semibold flex items-center justify-center gap-2 hover:shadow-xl transition-all active:scale-95"
-            >
-              <span>📊</span>
-              {language === "es" ? "Detalles" : "Details"}
-            </button>
+              <span className="text-lg">🏠</span>
+              {language === "es" ? "Volver a Inicio" : "Back to Home"}
+            </Link>
           </div>
         </main>
 
@@ -299,6 +315,17 @@ const Page = () => {
                     onChange={(e) => setAnalysisDate(e.target.value)}
                     className="w-full px-3 py-2 rounded-lg border-2 border-green-300 bg-white text-green-800 font-medium focus:outline-none focus:ring-2 focus:ring-green-400 text-sm"
                   />
+                </div>
+
+                {/* Botón de inicio en mobile */}
+                <div className="mt-3">
+                  <Link
+                    href="/"
+                    className="flex items-center justify-center gap-2 w-full bg-white/20 hover:bg-white/30 text-white px-4 py-2.5 rounded-lg font-semibold transition-all active:scale-95 text-sm"
+                  >
+                    <span className="text-base">🏠</span>
+                    {language === "es" ? "Volver a Inicio" : "Back to Home"}
+                  </Link>
                 </div>
               </div>
 

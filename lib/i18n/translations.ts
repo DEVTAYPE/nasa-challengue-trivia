@@ -160,7 +160,7 @@ export const translations: Record<Language, Translations> = {
       badge: "CropSense — NASA Satellite Crop Advisor",
       title: "Optimize planting using five years of satellite and climate data",
       titleHighlight: "Learn by playing",
-      subtitle: "Analyzes 5 years of NASA data (MODIS, ERA5, SRTM) + user input (coords, temp, irrigation, altitude) via a smart questionnaire to recommend optimal crops & planting windows.!",
+      subtitle: "Analyzing 5 years of NASA data (MODIS, ERA5, SRTM) + user input (coordinates, temperature, irrigation, altitude) via a smart questionnaire to recommend optimal crops and planting windows!",
       cta: "🌱 Start Playing",
     },
 

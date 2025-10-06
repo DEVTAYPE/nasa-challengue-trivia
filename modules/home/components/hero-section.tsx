@@ -16,6 +16,8 @@ export const HeroSection = () => {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url('/hero/hero-farm.jpg')` }}
         >
+          {/* Black overlay with 50% opacity */}
+          <div className="absolute inset-0 bg-black/50" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-background/95" />
         </div>
 
@@ -33,9 +35,9 @@ export const HeroSection = () => {
             {/* Main Heading */}
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground drop-shadow-2xl leading-tight">
               {t.hero.title}
-              <span className="block text-primary drop-shadow-[0_0_30px_rgba(76,175,80,0.5)]">
+              {/* <span className="block text-primary drop-shadow-[0_0_30px_rgba(76,175,80,0.5)]">
                 {t.hero.titleHighlight}
-              </span>
+              </span> */}
             </h1>
 
             {/* Subheading */}

@@ -157,7 +157,7 @@ export const translations: Record<Language, Translations> = {
     },
 
     hero: {
-      badge: "Nasa SAtellite CRop Advisor",
+      badge: "Nasa satellite crop advisor",
       title: "Optimize planting using five years of satellite and climate data",
       titleHighlight: "Learn by playing",
       subtitle:
@@ -329,7 +329,7 @@ export const translations: Record<Language, Translations> = {
     },
 
     hero: {
-      badge: "Nasa SAtellite CRop Advisor",
+      badge: "Nasa satellite crop advisor",
       title: "Aprende a cultivar como un experto usando datos reales de",
       titleHighlight: "satélites de la NASA.",
       subtitle:

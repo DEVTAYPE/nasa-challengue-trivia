@@ -45,29 +45,41 @@ const Page = () => {
     try {
       let data: MapResult2 | null = null;
 
-      try {
-        // Intenta obtener datos del servidor real
-        const response = await fetch(
-          `http://44.198.7.102:8000/recommend?lat=${lat}&lon=${lng}&date=${analysisDate}`,
-          {
-            method: "GET",
-            mode: "cors",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            signal: AbortSignal.timeout(10000), // 10 segundos timeout
-          }
-        );
+      // Obtener URL del backend de variables de entorno
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-        if (response.ok) {
-          data = (await response.json()) as MapResult2;
-          console.log("✅ Datos del servidor:", data);
-        } else {
-          throw new Error("Server error");
+      // Solo intentar obtener datos del servidor si hay URL configurada
+      if (apiUrl) {
+        try {
+          console.log("🌐 Intentando conectar con backend:", apiUrl);
+          const response = await fetch(
+            `${apiUrl}/recommend?lat=${lat}&lon=${lng}&date=${analysisDate}`,
+            {
+              method: "GET",
+              mode: "cors",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              signal: AbortSignal.timeout(10000), // 10 segundos timeout
+            }
+          );
+
+          if (response.ok) {
+            data = (await response.json()) as MapResult2;
+            console.log("✅ Datos del servidor:", data);
+          } else {
+            throw new Error("Server error");
+          }
+        } catch (err: any) {
+          console.log("⚠️ Error de backend, usando datos mock:", err.message);
         }
-      } catch (err: any) {
-        // Fallback silencioso a datos mock
-        console.log("📦 Usando datos de ejemplo");
+      } else {
+        console.log("ℹ️ No hay URL de backend configurada, usando datos mock");
+      }
+
+      // Fallback a datos mock si no hay backend o falló
+      if (!data) {
+        console.log("📦 Cargando datos de ejemplo");
         const mockResponse = await fetch(`/data/result-mock.json`);
         data = (await mockResponse.json()) as MapResult2;
       }

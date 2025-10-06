@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CROPS, Level, useGameStore } from "@/core";
+import { Level, useGameStore } from "@/core";
 import { useGameLanguage } from "@/core/application/useGameLanguage";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { GameEntryIcons } from "@/modules/home/components";
@@ -18,6 +18,7 @@ export const TriviaPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
+  const [showResults, setShowResults] = useState(false);
   const { t, language } = useLanguage();
 
   // Sincronizar idioma con el store del juego
@@ -58,14 +59,73 @@ export const TriviaPage = () => {
       // Si hay parámetros en la URL, inicializar sesión y cargar nivel
       if (cropParam && levelParam) {
         try {
-          const cropType = cropParam as "corn" | "potato" | "quinoa";
           const levelId = parseInt(levelParam);
 
-          // Inicializar o continuar sesión con el cultivo
-          await initializeOrContinueSession(cropType);
+          // Inicializar o continuar sesión con el cultivo (dinámico)
+          await initializeOrContinueSession(cropParam);
 
-          // Cargar el nivel específico
-          await startLevel(levelId);
+          // Cargar preguntas del mapa
+          const mapQuestionsKey = `map-questions-${cropParam.toLowerCase()}`;
+          const storedMapQuestions = localStorage.getItem(mapQuestionsKey);
+
+          if (!storedMapQuestions) {
+            // Verificar si el cultivo está en el último análisis
+            const lastAnalysis = localStorage.getItem("last-map-analysis");
+            if (lastAnalysis) {
+              const analysis = JSON.parse(lastAnalysis);
+              const cropInAnalysis = analysis.crops?.includes(
+                cropParam.toLowerCase()
+              );
+
+              if (cropInAnalysis) {
+                // El cultivo está en el análisis pero no tiene preguntas
+                toast.error(
+                  language === "es"
+                    ? `El cultivo ${cropParam} no tiene preguntas disponibles en este momento. Intenta con otro cultivo.`
+                    : `The crop ${cropParam} has no questions available right now. Try another crop.`
+                );
+                router.push("/dashboard-game");
+                return;
+              }
+            }
+
+            // El cultivo no está en ningún análisis
+            toast.error(
+              language === "es"
+                ? `Primero analiza ${cropParam} en el mapa para obtener preguntas`
+                : `First analyze ${cropParam} on the map to get questions`
+            );
+            router.push("/maps");
+            return;
+          }
+
+          try {
+            const mapQuestions = JSON.parse(storedMapQuestions);
+
+            if (!mapQuestions || mapQuestions.length === 0) {
+              throw new Error("No questions found");
+            }
+
+            const startLevelWithMapQuestions =
+              useGameStore.getState().startLevelWithMapQuestions;
+
+            // Usar preguntas del mapa
+            startLevelWithMapQuestions(levelId, mapQuestions);
+            console.log(
+              `✅ Usando preguntas del mapa para ${cropParam} nivel ${levelId}`,
+              mapQuestions
+            );
+          } catch (err) {
+            console.error("Error loading map questions:", err);
+            toast.error(
+              language === "es"
+                ? "Error al cargar preguntas. Ve al mapa primero."
+                : "Error loading questions. Go to map first."
+            );
+            router.push("/maps");
+            return;
+          }
+
           setIsLoading(false);
         } catch (error) {
           console.error("Error al cargar nivel desde URL:", error);
@@ -89,35 +149,7 @@ export const TriviaPage = () => {
     };
 
     loadFromQueryParams();
-  }, [
-    searchParams,
-    currentQuestions,
-    initializeOrContinueSession,
-    startLevel,
-    router,
-  ]);
-
-  // ✅ NUEVO: Recargar preguntas cuando cambia el idioma
-  useEffect(() => {
-    const reloadQuestionsOnLanguageChange = async () => {
-      // Solo recargar si ya hay una sesión activa y preguntas cargadas
-      if (session && session.selectedCrop && currentQuestions.length > 0) {
-        const currentLevel =
-          session.cropProgress[session.selectedCrop].currentLevel;
-
-        // Recargar el nivel actual con el nuevo idioma
-        await startLevel(currentLevel);
-
-        toast.success(
-          language === "es"
-            ? "Preguntas actualizadas al nuevo idioma"
-            : "Questions updated to new language"
-        );
-      }
-    };
-
-    reloadQuestionsOnLanguageChange();
-  }, [language]); // Solo observar cambios en el idioma
+  }, [searchParams, currentQuestions, initializeOrContinueSession, router]);
 
   // Mostrar pantalla de carga mientras se inicializa
   if (isLoading) {
@@ -158,12 +190,15 @@ export const TriviaPage = () => {
   const handleContinue = () => {
     if (currentQuestionIndex < currentQuestions.length - 1) {
       nextQuestion();
+    } else {
+      // Es la última pregunta, mostrar resultados
+      setShowResults(true);
     }
-    // Si es la última pregunta, el componente se renderizará como TriviaFinishResult
   };
 
   const handleRestart = async () => {
     // Reiniciar el nivel actual
+    setShowResults(false);
     const currentLevel =
       session.cropProgress[session.selectedCrop!].currentLevel;
     const startLevel = useGameStore.getState().startLevel;
@@ -171,8 +206,8 @@ export const TriviaPage = () => {
   };
 
   // Verificar si terminó el nivel
-  // El nivel termina cuando has respondido todas las preguntas
-  const isFinished = answers.length === currentQuestions.length;
+  // El nivel termina cuando has respondido todas las preguntas Y el usuario quiere ver resultados
+  const isFinished = answers.length === currentQuestions.length && showResults;
 
   // Verificar si es el primer intento y cuántas puede fallar
   const currentLevelData =
@@ -186,7 +221,7 @@ export const TriviaPage = () => {
   const currentLevelInfo = useGameStore
     .getState()
     .getCurrentLevel() as Level | null;
-  const maxQuestionFailed = currentLevelInfo?.maxQuestionFailed || 2;
+  const maxQuestionFailed = currentLevelInfo?.maxQuestionFailed ?? 0;
 
   if (isFinished) {
     return (
@@ -216,13 +251,11 @@ export const TriviaPage = () => {
           <p className="text-sm md:text-lg text-muted-foreground font-mono font-bold">
             {language === "es"
               ? `COMIENZA LA TRIVIA: Cultivo de ${
-                  CROPS[session.selectedCrop!].name
+                  session.selectedCrop
                 } - Nivel ${
                   session.cropProgress[session.selectedCrop!].currentLevel
                 }`
-              : `START TRIVIA: ${
-                  CROPS[session.selectedCrop!].name
-                } Crop - Level ${
+              : `START TRIVIA: ${session.selectedCrop} Crop - Level ${
                   session.cropProgress[session.selectedCrop!].currentLevel
                 }`}
           </p>
@@ -360,8 +393,8 @@ export const TriviaPage = () => {
                       {currentQuestionIndex < currentQuestions.length - 1
                         ? t.trivia.continue
                         : language === "es"
-                        ? "Ver Resultados"
-                        : "View Results"}
+                        ? "🏆 Finalizar Nivel"
+                        : "🏆 Finish Level"}
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
@@ -463,24 +496,36 @@ export const TriviaPage = () => {
                     transform: "translate(-50%, 50%)",
                   }}
                 >
-                  {/* Renderizar icono según el cultivo seleccionado */}
-                  {session.selectedCrop === "corn" && (
+                  {/* Renderizar icono dinámico según el cultivo */}
+                  {session.selectedCrop === "corn" ? (
                     <GameEntryIcons.corn
-                      className="relative animate-bounce w-16 h-16 "
+                      className="relative animate-bounce w-16 h-16"
                       style={{ animationDuration: "2s" }}
                     />
-                  )}
-                  {session.selectedCrop === "potato" && (
+                  ) : session.selectedCrop === "potato" ? (
                     <GameEntryIcons.potato
-                      className="relative animate-bounce w-16 h-16 "
+                      className="relative animate-bounce w-16 h-16"
                       style={{ animationDuration: "2s" }}
                     />
-                  )}
-                  {session.selectedCrop === "quinoa" && (
+                  ) : session.selectedCrop === "quinoa" ? (
                     <GameEntryIcons.quinoa
-                      className="relative animate-bounce w-16 h-16 "
+                      className="relative animate-bounce w-16 h-16"
                       style={{ animationDuration: "2s" }}
                     />
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="64"
+                      height="64"
+                      viewBox="0 0 24 24"
+                      className="relative animate-bounce w-16 h-16"
+                      style={{ animationDuration: "2s" }}
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"
+                      />
+                    </svg>
                   )}
                 </div>
 
@@ -540,14 +585,26 @@ export const TriviaPage = () => {
             <CardContent className="p-3">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  {session.selectedCrop === "corn" && (
+                  {/* Icono dinámico según el cultivo */}
+                  {session.selectedCrop === "corn" ? (
                     <GameEntryIcons.corn className="w-8 h-8" />
-                  )}
-                  {session.selectedCrop === "potato" && (
+                  ) : session.selectedCrop === "potato" ? (
                     <GameEntryIcons.potato className="w-8 h-8" />
-                  )}
-                  {session.selectedCrop === "quinoa" && (
+                  ) : session.selectedCrop === "quinoa" ? (
                     <GameEntryIcons.quinoa className="w-8 h-8" />
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      className="w-8 h-8"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"
+                      />
+                    </svg>
                   )}
                   <div>
                     <p className="text-xs font-semibold">Progreso</p>

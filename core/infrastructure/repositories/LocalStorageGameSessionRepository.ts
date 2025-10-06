@@ -4,7 +4,7 @@ import {
   CropProgress,
   LevelProgress,
 } from "../../domain/entities/GameSession";
-import { CropType, CROPS } from "../../domain/entities/Crop";
+import { CropType } from "../../domain/entities/Crop";
 import { GAME_LEVELS } from "../../domain/entities/Level";
 
 /**

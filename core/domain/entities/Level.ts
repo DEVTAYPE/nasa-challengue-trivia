@@ -22,7 +22,7 @@ export interface Level {
   maxQuestionFailed: number;
 }
 
-const MAX_QUESTION_FAILED = 2;
+const MAX_QUESTION_FAILED = 0;
 
 /**
  * Niveles del juego (comunes para todos los cultivos)

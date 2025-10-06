@@ -24,11 +24,16 @@ export const CROP_NAME_MAP: Record<string, CropType> = {
 /**
  * Convierte un nombre de cultivo del backend a CropType
  * @param cropName - Nombre del cultivo (puede venir en español o inglés)
- * @returns CropType correspondiente o null si no se encuentra
+ * @returns CropType correspondiente (siempre retorna un valor válido)
  */
-export function mapCropName(cropName: string): CropType | null {
+export function mapCropName(cropName: string): CropType {
   const normalized = cropName.toLowerCase().trim();
-  return CROP_NAME_MAP[normalized] || null;
+  // Si existe en el mapa, usar el mapeo
+  if (CROP_NAME_MAP[normalized]) {
+    return CROP_NAME_MAP[normalized];
+  }
+  // Si no existe, retornar el nombre normalizado como CropType dinámico
+  return normalized as CropType;
 }
 
 /**
@@ -40,7 +45,8 @@ export function getAvailableCrops(): CropType[] {
 
 /**
  * Verifica si un nombre de cultivo es válido
+ * Ahora siempre retorna true ya que aceptamos cualquier cultivo dinámico
  */
 export function isValidCropName(cropName: string): boolean {
-  return mapCropName(cropName) !== null;
+  return Boolean(cropName && cropName.trim().length > 0);
 }

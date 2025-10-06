@@ -1,6 +1,6 @@
 import { MapResult2 } from "@/core/domain/entities/map-result-2";
 import { useLanguage } from "@/lib/i18n/language-context";
-import React from "react";
+import React, { useEffect } from "react";
 
 interface CropDetailsProps {
   cropData: MapResult2 | null;
@@ -11,6 +11,34 @@ interface CropDetailsProps {
   error: string | null;
 }
 
+// Helper para almacenar preguntas del mapa en localStorage
+const storeMapQuestions = (cropName: string, questions: any[]) => {
+  if (questions && questions.length > 0) {
+    const first6Questions = questions.slice(0, 6); // Solo las primeras 6
+    localStorage.setItem(
+      `map-questions-${cropName.toLowerCase()}`,
+      JSON.stringify(first6Questions)
+    );
+  }
+};
+
+// Helper para almacenar metadata del último análisis
+const storeLastAnalysis = (
+  lat: number,
+  lng: number,
+  date: string,
+  crops: string[]
+) => {
+  const analysisData = {
+    lat,
+    lng,
+    date,
+    crops, // Lista de todos los cultivos del análisis
+    timestamp: Date.now(),
+  };
+  localStorage.setItem("last-map-analysis", JSON.stringify(analysisData));
+};
+
 export const CropDetails: React.FC<CropDetailsProps> = ({
   cropData,
   selectedCropIndex,
@@ -20,6 +48,52 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
   error,
 }) => {
   const { t, language } = useLanguage();
+
+  // Almacenar preguntas cuando lleguen datos del mapa
+  useEffect(() => {
+    if (
+      cropData?.detailed_recommendations &&
+      cropData.detailed_recommendations.length > 0
+    ) {
+      console.log(
+        "📦 Procesando recomendaciones del backend:",
+        cropData.detailed_recommendations
+      );
+
+      // Procesar cada recomendación (cada cultivo tiene sus preguntas)
+      cropData.detailed_recommendations.forEach((recommendation) => {
+        const cropName = recommendation.crop_name.toLowerCase();
+
+        // Las preguntas vienen dentro de cada recommendation
+        if (recommendation.questions && recommendation.questions.length > 0) {
+          // Almacenar las primeras 6 preguntas del cultivo
+          storeMapQuestions(cropName, recommendation.questions);
+          console.log(
+            `✅ ${recommendation.questions.length} preguntas guardadas para ${cropName}`
+          );
+        } else {
+          console.log(`⚠️ ${cropName} no tiene preguntas`);
+        }
+      });
+
+      // Guardar metadata del análisis con TODOS los cultivos del backend
+      if (cropData.analysis_info) {
+        const allCrops = cropData.detailed_recommendations.map((rec) =>
+          rec.crop_name.toLowerCase()
+        );
+        storeLastAnalysis(
+          cropData.analysis_info.coordinates.lat,
+          cropData.analysis_info.coordinates.lon,
+          cropData.analysis_info.analysis_date,
+          allCrops
+        );
+        console.log("✅ Metadata del análisis guardada:", {
+          crops: allCrops,
+          location: cropData.analysis_info.coordinates,
+        });
+      }
+    }
+  }, [cropData]);
 
   // Loading state
   if (loading) {
@@ -91,30 +165,6 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
               : "Ubicación"}
           </h3>
         </div>
-        {/* <div className="p-4 space-y-2">
-          {locationInfo && analysis_info?.coordinates && (
-            <p className="text-sm text-gray-600 font-mono">
-              📐 {analysis_info.coordinates.lat?.toFixed(4) || "N/A"}°,{" "}
-              {analysis_info.coordinates.lon?.toFixed(4) || "N/A"}°
-            </p>
-          )}
-          {analysis_info && (
-            <div className="grid grid-cols-2 gap-3 pt-2 border-t">
-              <div className="bg-blue-50 rounded-lg p-3">
-                <p className="text-xs text-blue-600 mb-1">📅 Fecha Análisis</p>
-                <p className="font-mono text-sm font-semibold text-blue-900">
-                  {analysis_info.analysis_date}
-                </p>
-              </div>
-              <div className="bg-green-50 rounded-lg p-3">
-                <p className="text-xs text-green-600 mb-1">🌱 Cultivos</p>
-                <p className="font-mono text-sm font-semibold text-green-900">
-                  {analysis_info.total_crops_analyzed}
-                </p>
-              </div>
-            </div>
-          )}
-        </div> */}
       </div>
 
       {/* Top Recommendations */}
@@ -135,7 +185,9 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
         <div className="divide-y divide-gray-200">
           {cropData.top_recommendations.map((crop, index) => (
             <div
-              key={index}
+              key={`${crop.crop_name}-${index}-${
+                cropData.analysis_info?.coordinates.lat || 0
+              }`}
               className={`w-full transition-all ${
                 selectedCropIndex === index
                   ? "bg-green-100 border-l-4 border-green-600"
@@ -143,27 +195,16 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
               }`}
             >
               <button
-                onClick={() => onCropSelect(index)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCropSelect(index);
+                }}
                 className="w-full p-4 text-left hover:bg-green-50 transition-all"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="font-semibold text-gray-900 mb-1 flex items-center gap-2">
                       {crop.crop_name}
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <span
-                        className={`px-2 py-0.5 rounded-full font-semibold ${getConfidenceBadgeClass(
-                          crop.confidence_level
-                        )}`}
-                      >
-                        {getConfidenceLevelLabel(crop.confidence_level)}
-                      </span>
-                      <span className="text-gray-400">•</span>
-                      <span className="font-mono">
-                        {crop.growth_period_days}{" "}
-                        {language === "es" ? "días" : "days"}
-                      </span>
                     </div>
                   </div>
                   <div
@@ -227,16 +268,6 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
                   {Math.round(selectedCrop.suitability_score)}%
                 </p>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600 mb-1">Potencial</p>
-                <p
-                  className={`text-lg font-semibold ${getYieldPotentialColorClass(
-                    selectedCrop.yield_potential
-                  )}`}
-                >
-                  {getYieldPotentialLabel(selectedCrop.yield_potential)}
-                </p>
-              </div>
             </div>
 
             {/* Planting Details */}
@@ -262,18 +293,6 @@ export const CropDetails: React.FC<CropDetailsProps> = ({
                 <p className="font-mono text-sm font-semibold text-purple-900">
                   {selectedCrop.growth_period_days} días
                 </p>
-              </div>
-              <div className="bg-amber-50 rounded-lg p-3 border border-amber-200">
-                <p className="text-xs text-amber-600 mb-1">📊 Confianza</p>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded-full font-semibold ${getConfidenceBadgeClass(
-                      selectedCrop.confidence_level
-                    )}`}
-                  >
-                    {getConfidenceLevelLabel(selectedCrop.confidence_level)}
-                  </span>
-                </div>
               </div>
             </div>
 

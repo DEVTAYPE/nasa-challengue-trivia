@@ -94,6 +94,7 @@ const Page = () => {
   };
 
   const handleCropSelect = (cropIndex: number) => {
+    console.log("🎯 Crop selected:", cropIndex, "- NOT changing location");
     setSelectedCropIndex(cropIndex);
   };
 

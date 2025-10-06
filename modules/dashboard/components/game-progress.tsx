@@ -16,15 +16,17 @@ import {
 import { CheckCircle2, Lock, Play, Trophy } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { LevelSelectDetail } from "./level-select-detail";
-import { useGameStore, CROPS, CropType, Level } from "@/core";
+import { useGameStore, CropType, Level } from "@/core";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { GameProgressIcons } from "./game-progress-icons";
 import { useLanguage } from "@/lib/i18n/language-context";
+import Link from "next/link";
 
 export const GameProgress = () => {
   const [selectedLevel, setSelectedLevel] = useState<Level | null>(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [availableCrops, setAvailableCrops] = useState<string[]>([]);
   const popoverRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { t, language } = useLanguage();
@@ -39,6 +41,61 @@ export const GameProgress = () => {
 
   // Obtener niveles del cultivo actual
   const levels = getLevelsForCurrentCrop();
+
+  // Obtener cultivos disponibles desde el último análisis del mapa
+  useEffect(() => {
+    const getAvailableCrops = () => {
+      const crops: string[] = [];
+
+      try {
+        // Primero intentar obtener de la metadata del último análisis
+        const lastAnalysis = localStorage.getItem("last-map-analysis");
+        if (lastAnalysis) {
+          const analysis = JSON.parse(lastAnalysis);
+          if (analysis.crops && Array.isArray(analysis.crops)) {
+            // Capitalizar y retornar todos los cultivos del análisis
+            analysis.crops.forEach((crop: string) => {
+              const capitalizedCrop =
+                crop.charAt(0).toUpperCase() + crop.slice(1);
+              crops.push(capitalizedCrop);
+            });
+            setAvailableCrops(crops);
+            return;
+          }
+        }
+
+        // Fallback: Buscar claves "map-questions-" (compatibilidad con versión anterior)
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith("map-questions-")) {
+            const cropName = key.replace("map-questions-", "");
+            const capitalizedCrop =
+              cropName.charAt(0).toUpperCase() + cropName.slice(1);
+            if (!crops.includes(capitalizedCrop)) {
+              crops.push(capitalizedCrop);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error loading available crops:", err);
+      }
+
+      setAvailableCrops(crops);
+    };
+
+    getAvailableCrops();
+
+    // Escuchar cambios en localStorage
+    const handleStorageChange = () => {
+      getAvailableCrops();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   // Close popover when clicking outside
   useEffect(() => {
@@ -78,10 +135,14 @@ export const GameProgress = () => {
     try {
       await selectCrop(cropType);
       setIsPopoverOpen(false);
+
+      // Capitalizar el nombre del cultivo
+      const cropName = cropType.charAt(0).toUpperCase() + cropType.slice(1);
+
       toast.success(
         language === "es"
-          ? `Cultivo cambiado a ${CROPS[cropType].name}`
-          : `Crop changed to ${CROPS[cropType].name}`
+          ? `Cultivo cambiado a ${cropName}`
+          : `Crop changed to ${cropName}`
       );
       router.push("/dashboard-game?crop=" + cropType);
     } catch (error) {
@@ -137,15 +198,20 @@ export const GameProgress = () => {
           {/* Level Map */}
           <div className="relative">
             <Card className="bg-card/50 backdrop-blur-sm border-border/50 overflow-visible">
-              <CardHeader>
+              <CardHeader className="flex items-center gap-3">
                 <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                   <PopoverTrigger asChild>
                     <Button className="w-fit">
                       {language === "es" ? "Cultivo actual" : "Current crop"}:{" "}
-                      {CROPS[session.selectedCrop!].name}
+                      {session.selectedCrop!.charAt(0).toUpperCase() +
+                        session.selectedCrop!.slice(1)}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-80" side="bottom" align="start">
+                  <PopoverContent
+                    className="w-80 max-h-[400px] overflow-y-auto"
+                    side="bottom"
+                    align="start"
+                  >
                     <section className="space-y-4">
                       <section className="space-y-3">
                         <CardTitle className="flex items-center gap-1">
@@ -184,26 +250,73 @@ export const GameProgress = () => {
                             : "Change crop"}
                           :
                         </p>
-                        {Object.values(CROPS).map((crop) => (
-                          <Button
-                            key={crop.id}
-                            onClick={() => handleCropChange(crop.id)}
-                            variant={
-                              session.selectedCrop === crop.id
-                                ? "default"
-                                : "outline"
-                            }
-                            className="w-full justify-start"
-                            disabled={isLoading}
-                          >
-                            {crop.name}
-                            {session.selectedCrop === crop.id && " ✓"}
-                          </Button>
-                        ))}
+                        {availableCrops.length === 0 ? (
+                          <div className="text-center p-4 text-sm text-muted-foreground">
+                            <p className="mb-2">
+                              {language === "es"
+                                ? "No hay cultivos disponibles"
+                                : "No crops available"}
+                            </p>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                router.push("/maps");
+                                setIsPopoverOpen(false);
+                              }}
+                            >
+                              {language === "es" ? "Ir al Mapa" : "Go to Map"}
+                            </Button>
+                          </div>
+                        ) : (
+                          availableCrops.map((cropName) => {
+                            const cropId = cropName.toLowerCase();
+                            // Verificar si tiene preguntas disponibles
+                            const hasQuestions =
+                              localStorage.getItem(
+                                `map-questions-${cropId}`
+                              ) !== null;
+
+                            return (
+                              <Button
+                                key={cropId}
+                                onClick={() =>
+                                  handleCropChange(cropId as CropType)
+                                }
+                                variant={
+                                  session.selectedCrop === cropId
+                                    ? "default"
+                                    : "outline"
+                                }
+                                className="w-full justify-start"
+                                disabled={isLoading || !hasQuestions}
+                              >
+                                {cropName}
+                                {session.selectedCrop === cropId && " ✓"}
+                                {!hasQuestions && (
+                                  <span className="ml-auto text-xs opacity-50">
+                                    {language === "es"
+                                      ? "Sin preguntas"
+                                      : "No questions"}
+                                  </span>
+                                )}
+                              </Button>
+                            );
+                          })
+                        )}
                       </section>
                     </section>
                   </PopoverContent>
                 </Popover>
+
+                <Link
+                  href="/maps"
+                  className="bg-gradient-to-r from-primary via-secondary to-accent  font-semibold underline ml-4"
+                >
+                  {language === "es"
+                    ? "Analiza una nueva ubicación en el mapa"
+                    : "Analyze a new location on the map"}
+                </Link>
               </CardHeader>
               <CardContent className="p-8">
                 <div className="relative h-[600px] w-full overflow-visible">

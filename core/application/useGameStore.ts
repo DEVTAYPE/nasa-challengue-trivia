@@ -51,6 +51,10 @@ interface GameStore {
 
   // Acciones de nivel
   startLevel: (levelId: number) => Promise<void>;
+  startLevelWithMapQuestions: (
+    levelId: number,
+    mapQuestions: Question[]
+  ) => void;
   getLevelsForCurrentCrop: () => Level[];
 
   // Acciones de trivia
@@ -135,6 +139,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
       if (existingSession) {
         // Ya existe sesión, solo actualizamos el cultivo
+
+        // Si el cultivo no existe en cropProgress, crearlo
+        if (!existingSession.cropProgress[cropType]) {
+          existingSession.cropProgress[cropType] =
+            createInitialCropProgress(cropType);
+        }
+
         const updatedSession: GameSession = {
           ...existingSession,
           selectedCrop: cropType,
@@ -194,6 +205,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
   selectCrop: async (cropType: CropType) => {
     const { session, sessionRepository } = get();
     if (!session) return;
+
+    // Si el cultivo no existe en cropProgress, crearlo
+    if (!session.cropProgress[cropType]) {
+      session.cropProgress[cropType] = createInitialCropProgress(cropType);
+    }
 
     const updatedSession = {
       ...session,
@@ -261,6 +277,43 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   /**
+   * Inicia un nivel con preguntas desde MapResult2
+   * Toma las primeras 6 preguntas del mapa y asigna 1 pregunta por nivel
+   */
+  startLevelWithMapQuestions: (levelId: number, mapQuestions: Question[]) => {
+    const { session } = get();
+    if (!session || !session.selectedCrop) return;
+
+    // Tomar solo la pregunta correspondiente al nivel (levelId - 1 porque los arrays empiezan en 0)
+    const questionIndex = levelId - 1;
+    const levelQuestion = mapQuestions[questionIndex];
+
+    if (!levelQuestion) {
+      console.error(`No hay pregunta para el nivel ${levelId}`);
+      return;
+    }
+
+    // Asignar el levelId correcto a la pregunta
+    const question: Question = {
+      ...levelQuestion,
+      levelId: levelId,
+    };
+
+    set({
+      currentQuestions: [question], // Solo 1 pregunta por nivel
+      currentQuestionIndex: 0,
+      selectedAnswer: null,
+      showFeedback: false,
+      answers: [],
+      isLoading: false,
+      session: {
+        ...session,
+        currentLevel: levelId,
+      },
+    });
+  },
+
+  /**
    * Obtiene los niveles con el estado de progreso del cultivo actual
    */
   getLevelsForCurrentCrop: () => {
@@ -268,7 +321,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (!session || !session.selectedCrop) return [];
 
     const cropProgress = session.cropProgress[session.selectedCrop];
-    if (!cropProgress) return [];
+
+    // Si no hay progreso para este cultivo, devolver niveles con estado inicial
+    if (!cropProgress) {
+      return GAME_LEVELS.map((level, index) => ({
+        ...level,
+        status: (index === 0 ? "available" : "locked") as LevelStatus,
+      }));
+    }
 
     return GAME_LEVELS.map((level) => {
       const progress = cropProgress.levelsProgress[level.id];
@@ -343,7 +403,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const currentLevelData = GAME_LEVELS.find(
       (l) => l.id === session.currentLevel
     );
-    const maxQuestionFailed = currentLevelData?.maxQuestionFailed || 2;
+    const maxQuestionFailed = currentLevelData?.maxQuestionFailed ?? 0;
 
     // Verificar si es el primer intento (status === "available")
     const existingProgress =

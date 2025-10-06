@@ -33,8 +33,11 @@ export const TriviaFinishResult: React.FC<TriviaFinishResultProps> = ({
   const passed = !isFirstAttempt || incorrectAnswers <= maxQuestionFailed;
 
   const handleBackToDashboard = async () => {
-    // Terminar el nivel guardará el progreso
-    await finishLevel();
+    // IMPORTANTE: Solo finalizar nivel si pasó o es reintento
+    // Si falló en el primer intento, NO avanzar de nivel
+    if (passed) {
+      await finishLevel();
+    }
     router.push("/dashboard-game");
   };
   return (

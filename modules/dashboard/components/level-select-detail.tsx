@@ -64,7 +64,37 @@ export const LevelSelectDetail: React.FC<LevelSelectDetailProps> = ({
     }
 
     try {
-      await startLevel(level.id);
+      // Intentar cargar preguntas del mapa primero
+      const mapQuestionsKey = `map-questions-${cropType.toLowerCase()}`;
+      const storedMapQuestions = localStorage.getItem(mapQuestionsKey);
+
+      if (storedMapQuestions) {
+        try {
+          const mapQuestions = JSON.parse(storedMapQuestions);
+          const startLevelWithMapQuestions =
+            useGameStore.getState().startLevelWithMapQuestions;
+
+          // Usar preguntas del mapa
+          startLevelWithMapQuestions(level.id, mapQuestions);
+          console.log(
+            `✅ Usando preguntas del mapa para ${cropType} nivel ${level.id}`
+          );
+          toast.success(
+            language === "es"
+              ? "¡Preguntas basadas en análisis geográfico!"
+              : "Questions based on geographic analysis!"
+          );
+        } catch (err) {
+          console.warn("Error parsing map questions, using default:", err);
+          // Si falla, usar preguntas predeterminadas
+          await startLevel(level.id);
+        }
+      } else {
+        // No hay preguntas del mapa, usar predeterminadas
+        console.log(`📚 Usando preguntas predeterminadas para ${cropType}`);
+        await startLevel(level.id);
+      }
+
       router.push(`/dashboard-game/trivia?crop=${cropType}&level=${level.id}`);
     } catch (error) {
       toast.error(

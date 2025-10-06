@@ -1,7 +1,7 @@
 "use client";
 
 import { GameProgress } from "@/modules/dashboard/components";
-import { useGameStore, mapCropName, CROPS, CropType } from "@/core";
+import { useGameStore, mapCropName, getCrop, CropType } from "@/core";
 import { useGameLanguage } from "@/core/application/useGameLanguage";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
@@ -12,8 +12,6 @@ const DashboardGameContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isInitializing, setIsInitializing] = useState(true);
-  const [cropNotFound, setCropNotFound] = useState(false);
-  const [invalidCrop, setInvalidCrop] = useState<string | null>(null);
   const { language } = useLanguage();
 
   // ✅ Sincronizar idioma con el store del juego
@@ -32,41 +30,71 @@ const DashboardGameContent = () => {
         const cropParam = searchParams.get("crop");
 
         if (cropParam) {
-          // 2. Mapear el nombre del cultivo
+          // 2. Mapear el nombre del cultivo (ahora siempre retorna un valor)
           const mappedCrop = mapCropName(cropParam);
-
-          if (!mappedCrop) {
-            // Cultivo no válido, mostrar opciones
-            setInvalidCrop(cropParam);
-            setCropNotFound(true);
-            setIsInitializing(false);
-            toast.error(
-              language === "es"
-                ? `No tenemos niveles para "${cropParam}". Selecciona uno de los disponibles.`
-                : `We don't have levels for "${cropParam}". Select one of the available ones.`
-            );
-            return;
-          }
+          const cropInfo = getCrop(mappedCrop);
 
           // 3. Inicializar o continuar sesión con el cultivo
           await initializeOrContinueSession(mappedCrop);
           toast.success(
             language === "es"
-              ? `¡Bienvenido! Cultivo: ${CROPS[mappedCrop].name} 🌱`
-              : `Welcome! Crop: ${CROPS[mappedCrop].name} 🌱`
+              ? `¡Bienvenido! Cultivo: ${cropInfo.name} ${
+                  cropInfo.icon || "🌱"
+                }`
+              : `Welcome! Crop: ${cropInfo.name} ${cropInfo.icon || "🌱"}`
           );
         } else {
           // No hay crop en params, cargar sesión existente
           await loadSession();
 
+          // Si no hay sesión, intentar recuperar del último análisis
           if (!session) {
-            // No hay sesión ni crop param, redirigir a home
+            // Buscar el último análisis del mapa
+            const lastAnalysis = localStorage.getItem("last-map-analysis");
+            if (lastAnalysis) {
+              try {
+                const analysis = JSON.parse(lastAnalysis);
+                if (analysis.crops && analysis.crops.length > 0) {
+                  // Buscar el primer cultivo que tenga preguntas
+                  let cropWithQuestions = null;
+                  for (const crop of analysis.crops) {
+                    const hasQuestions =
+                      localStorage.getItem(`map-questions-${crop}`) !== null;
+                    if (hasQuestions) {
+                      cropWithQuestions = crop;
+                      break;
+                    }
+                  }
+
+                  if (cropWithQuestions) {
+                    // Inicializar con el primer cultivo que tenga preguntas
+                    await initializeOrContinueSession(cropWithQuestions);
+                    const cropInfo = getCrop(cropWithQuestions);
+                    toast.success(
+                      language === "es"
+                        ? `Continuando con ${cropInfo.name} ${
+                            cropInfo.icon || "🌱"
+                          }`
+                        : `Continuing with ${cropInfo.name} ${
+                            cropInfo.icon || "🌱"
+                          }`
+                    );
+                    setIsInitializing(false);
+                    return;
+                  }
+                }
+              } catch (err) {
+                console.error("Error parsing last analysis:", err);
+              }
+            }
+
+            // No hay datos disponibles, redirigir al mapa
             toast.info(
               language === "es"
-                ? "Selecciona un cultivo para comenzar"
-                : "Select a crop to start"
+                ? "Analiza una ubicación en el mapa para comenzar"
+                : "Analyze a location on the map to start"
             );
-            router.push("/");
+            router.push("/maps");
             return;
           }
         }
@@ -101,71 +129,6 @@ const DashboardGameContent = () => {
               ? "Preparando el terreno para tus cultivos 🌱"
               : "Preparing the ground for your crops 🌱"}
           </p>
-        </div>
-      </main>
-    );
-  }
-
-  // Crop not found state
-  if (cropNotFound) {
-    return (
-      <main className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="max-w-2xl w-full bg-card border border-border rounded-2xl p-8 space-y-6">
-          <div className="text-center space-y-3">
-            <div className="text-6xl">🌾</div>
-            <h2 className="text-3xl font-bold text-foreground">
-              {language === "es"
-                ? "Cultivo no disponible"
-                : "Crop not available"}
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              {language === "es"
-                ? "Lo sentimos, no tenemos niveles para "
-                : "Sorry, we don't have levels for "}
-              <span className="font-semibold text-foreground">
-                "{invalidCrop}"
-              </span>
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <p className="text-center text-muted-foreground font-semibold">
-              {language === "es"
-                ? "Selecciona uno de nuestros cultivos disponibles:"
-                : "Select one of our available crops:"}
-            </p>
-            <div className="grid gap-4">
-              {(Object.keys(CROPS) as CropType[]).map((cropType) => {
-                const crop = CROPS[cropType];
-                return (
-                  <button
-                    key={cropType}
-                    onClick={() => {
-                      router.push(`/dashboard-game?crop=${cropType}`);
-                      setCropNotFound(false);
-                      setIsInitializing(true);
-                    }}
-                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white p-6 rounded-xl font-bold text-xl transition-all hover:shadow-lg active:scale-95 flex items-center justify-between"
-                  >
-                    <span className="flex items-center gap-3">
-                      <span className="text-3xl">{crop.icon}</span>
-                      <span>{crop.name}</span>
-                    </span>
-                    <span className="text-2xl">→</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="pt-4 border-t border-border">
-            <button
-              onClick={() => router.push("/maps")}
-              className="w-full bg-muted hover:bg-muted/80 text-foreground py-3 rounded-lg font-semibold transition-all"
-            >
-              ← {language === "es" ? "Volver al Mapa" : "Back to Map"}
-            </button>
-          </div>
         </div>
       </main>
     );

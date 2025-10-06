@@ -133,8 +133,8 @@ const Page = () => {
             <div className="w-14 h-14 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
             <h2 className="text-2xl font-bold text-green-800 mb-2">
               {language === "es"
-                ? "🌾 Analizando Ubicación..."
-                : "🌾 Analyzing Location..."}
+                ? "Análisis de 5 años de datos de la NASA sobre la ubicación..."
+                : "Analyzing 5 years of NASA data for the location."}
             </h2>
             <p className="text-gray-600">
               {language === "es"
